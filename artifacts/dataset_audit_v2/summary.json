@@ -1,0 +1,138 @@
+{
+  "images": 5814,
+  "datasets": {
+    "baby_face": 1000,
+    "posture": 4814
+  },
+  "metadata": [
+    {
+      "dataset": "baby_face",
+      "split": "test",
+      "images": 100,
+      "categories": [
+        "baby",
+        "baby",
+        "baby_face"
+      ],
+      "declared_licenses": [
+        {
+          "id": 1,
+          "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+          "name": "Public Domain"
+        }
+      ]
+    },
+    {
+      "dataset": "baby_face",
+      "split": "train",
+      "images": 700,
+      "categories": [
+        "baby",
+        "baby",
+        "baby_face"
+      ],
+      "declared_licenses": [
+        {
+          "id": 1,
+          "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+          "name": "Public Domain"
+        }
+      ]
+    },
+    {
+      "dataset": "baby_face",
+      "split": "valid",
+      "images": 200,
+      "categories": [
+        "baby",
+        "baby",
+        "baby_face"
+      ],
+      "declared_licenses": [
+        {
+          "id": 1,
+          "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+          "name": "Public Domain"
+        }
+      ]
+    },
+    {
+      "dataset": "posture",
+      "split": "test",
+      "images": 201,
+      "categories": [
+        "bounding-box",
+        "prone",
+        "side",
+        "supine"
+      ],
+      "declared_licenses": [
+        {
+          "id": 1,
+          "url": "https://creativecommons.org/licenses/by/4.0/",
+          "name": "CC BY 4.0"
+        }
+      ]
+    },
+    {
+      "dataset": "posture",
+      "split": "train",
+      "images": 4212,
+      "categories": [
+        "bounding-box",
+        "prone",
+        "side",
+        "supine"
+      ],
+      "declared_licenses": [
+        {
+          "id": 1,
+          "url": "https://creativecommons.org/licenses/by/4.0/",
+          "name": "CC BY 4.0"
+        }
+      ]
+    },
+    {
+      "dataset": "posture",
+      "split": "valid",
+      "images": 401,
+      "categories": [
+        "bounding-box",
+        "prone",
+        "side",
+        "supine"
+      ],
+      "declared_licenses": [
+        {
+          "id": 1,
+          "url": "https://creativecommons.org/licenses/by/4.0/",
+          "name": "CC BY 4.0"
+        }
+      ]
+    }
+  ],
+  "posture_annotation_counts": {
+    "unknown": 1025,
+    "side": 1565,
+    "prone": 1585,
+    "back": 1639
+  },
+  "eligible_posture_images": 4421,
+  "source_image_groups": 2438,
+  "declared_original_image_groups": 2801,
+  "groups_crossing_original_splits": 188,
+  "conflicting_label_groups": 44,
+  "conflicting_label_images": 368,
+  "exact_unique_files": 5767,
+  "duplicate_links": {
+    "sha256": 47,
+    "pixel_sha256": 47,
+    "source_name": 3001
+  },
+  "near_duplicate_group_links": 363,
+  "near_duplicate_max_hamming": 4,
+  "unknown_with_duplicate_label_suggestion": 23,
+  "baby_identity_available": false,
+  "recording_identity_available": false,
+  "limitation": "Source-image groups are conservative duplicate candidates, not infant identities. Publisher labels require independent review. This audit does not certify licenses, labels, posture accuracy, or airway outcomes."
+}

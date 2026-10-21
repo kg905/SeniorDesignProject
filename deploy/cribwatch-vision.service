@@ -1,0 +1,18 @@
+[Unit]
+Description=CribWatch research Pi 5 vision monitor
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/SeniorDesignProject
+EnvironmentFile=/etc/cribwatch.env
+ExecStart=/home/pi/SeniorDesignProject/.venv/bin/cribwatch monitor --picamera --models models --classifier artifacts/run1/posture.joblib --alarm-url http://192.168.50.1:8765 --ack-file /tmp/cribwatch-ack
+Restart=on-failure
+RestartSec=2
+NoNewPrivileges=true
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

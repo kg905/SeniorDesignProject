@@ -1,0 +1,10 @@
+{
+  "baby-detection.v16i.coco.zip": {
+    "size_bytes": 199283513,
+    "sha256": "4905028a90a7ebd33908388c7f57145a2af67d7b73ab8c905778be4dc35f99f3"
+  },
+  "baby.v5-dataset70_20_10.coco.zip": {
+    "size_bytes": 43360504,
+    "sha256": "5b0e3665625cbf39e600d57bd03a0777dd39c5760ac9d9644d8eb999712acbb5"
+  }
+}

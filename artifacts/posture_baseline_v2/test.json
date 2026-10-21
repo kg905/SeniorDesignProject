@@ -1,0 +1,163 @@
+{
+  "n_images": 885,
+  "n_babies": null,
+  "grouping_field": "source_group",
+  "n_evaluation_groups": 341,
+  "accuracy_all_images_unknown_counts_as_error": 0.18757062146892656,
+  "accuracy_95ci_group_cluster_bootstrap": [
+    0.15578875891231211,
+    0.22361213741756747
+  ],
+  "coverage": 0.3231638418079096,
+  "accuracy_on_accepted_only": 0.5804195804195804,
+  "unsafe_predicted_back_count": 61,
+  "unsafe_total": 596,
+  "class_order": [
+    "back",
+    "side",
+    "prone",
+    "unknown"
+  ],
+  "confusion_matrix": [
+    [
+      97,
+      10,
+      14,
+      168
+    ],
+    [
+      37,
+      37,
+      16,
+      209
+    ],
+    [
+      24,
+      19,
+      32,
+      222
+    ],
+    [
+      0,
+      0,
+      0,
+      0
+    ]
+  ],
+  "per_class": {
+    "back": {
+      "correct": 97,
+      "total": 289,
+      "recall": 0.3356401384083045,
+      "frame_binomial_95ci_descriptive_only": [
+        0.28366902817080986,
+        0.3919233541968514
+      ]
+    },
+    "side": {
+      "correct": 37,
+      "total": 299,
+      "recall": 0.12374581939799331,
+      "frame_binomial_95ci_descriptive_only": [
+        0.09112574523088064,
+        0.1659112507069258
+      ]
+    },
+    "prone": {
+      "correct": 32,
+      "total": 297,
+      "recall": 0.10774410774410774,
+      "frame_binomial_95ci_descriptive_only": [
+        0.0773601334721801,
+        0.14814555010824892
+      ]
+    }
+  },
+  "limitations": "Research posture labels only, not SIDS/airway outcomes. Intervals are uncertain with few babies. No event latency or false-alarm/hour claim from still images. No infant/session IDs: source-image groups cannot demonstrate accuracy on unseen babies.",
+  "posture_95pct_point_estimates_met": false,
+  "research_95pct_point_target_met": false,
+  "exploratory": true,
+  "score_threshold": 0.5,
+  "requested_min_validation_coverage": 0.5,
+  "validation_coverage_constraint_met": false,
+  "pose_gate_coverage_ceiling": 0.5785310734463277,
+  "unthresholded_diagnostic": {
+    "n_images": 885,
+    "n_babies": null,
+    "grouping_field": "source_group",
+    "n_evaluation_groups": 341,
+    "accuracy_all_images_unknown_counts_as_error": 0.2858757062146893,
+    "accuracy_95ci_group_cluster_bootstrap": [
+      0.25054266645479106,
+      0.3281102461622669
+    ],
+    "coverage": 0.5785310734463277,
+    "accuracy_on_accepted_only": 0.494140625,
+    "unsafe_predicted_back_count": 110,
+    "unsafe_total": 596,
+    "class_order": [
+      "back",
+      "side",
+      "prone",
+      "unknown"
+    ],
+    "confusion_matrix": [
+      [
+        116,
+        27,
+        41,
+        105
+      ],
+      [
+        60,
+        71,
+        42,
+        126
+      ],
+      [
+        50,
+        39,
+        66,
+        142
+      ],
+      [
+        0,
+        0,
+        0,
+        0
+      ]
+    ],
+    "per_class": {
+      "back": {
+        "correct": 116,
+        "total": 289,
+        "recall": 0.4013840830449827,
+        "frame_binomial_95ci_descriptive_only": [
+          0.3465210538583077,
+          0.45883437556228907
+        ]
+      },
+      "side": {
+        "correct": 71,
+        "total": 299,
+        "recall": 0.23745819397993312,
+        "frame_binomial_95ci_descriptive_only": [
+          0.1927474846515614,
+          0.2888294414028191
+        ]
+      },
+      "prone": {
+        "correct": 66,
+        "total": 297,
+        "recall": 0.2222222222222222,
+        "frame_binomial_95ci_descriptive_only": [
+          0.17865679566598575,
+          0.2728815639510562
+        ]
+      }
+    },
+    "limitations": "Research posture labels only, not SIDS/airway outcomes. Intervals are uncertain with few babies. No event latency or false-alarm/hour claim from still images. No infant/session IDs: source-image groups cannot demonstrate accuracy on unseen babies.",
+    "posture_95pct_point_estimates_met": false,
+    "research_95pct_point_target_met": false
+  }
+}

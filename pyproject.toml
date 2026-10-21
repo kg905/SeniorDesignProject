@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cribwatch-research"
+version = "0.2.0"
+description = "Research prototype for infant posture classification and alarm transport"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+  "numpy==2.2.6",
+  "scikit-learn==1.7.2",
+  "scipy>=1.11,<2",
+  "joblib>=1.4,<2",
+  "Pillow>=11,<13",
+]
+
+[project.optional-dependencies]
+vision = ["mediapipe==1.1.1", "opencv-contrib-python==4.12.0.88"]
+notebook = ["ipywidgets>=8,<9"]
+test = ["pytest>=8,<10"]
+gpio = ["gpiozero>=2,<3"]
+
+[project.scripts]
+cribwatch = "cribwatch.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,19 @@
+[Unit]
+Description=CribWatch research portable alarm receiver
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/SeniorDesignProject
+EnvironmentFile=/etc/cribwatch.env
+Environment=GPIOZERO_PIN_FACTORY=lgpio
+ExecStart=/home/pi/SeniorDesignProject/.venv/bin/cribwatch receiver --host 0.0.0.0 --port 8765 --gpio 17 --mute-button 27
+Restart=on-failure
+RestartSec=2
+NoNewPrivileges=true
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

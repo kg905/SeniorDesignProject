@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none'; img-src 'none'">
+<title>Split a dataset for chat upload</title>
+<style>
+body{font:17px/1.55 system-ui,sans-serif;max-width:850px;margin:3rem auto;padding:0 1rem;color:#172337;background:#f6f8fc}
+main{background:white;padding:2rem;border-radius:16px;border:1px solid #dae1eb}h1{line-height:1.2}
+button,input{font:inherit}button{padding:.65rem 1rem;cursor:pointer;border:1px solid #c1ccdc;border-radius:8px;background:#f0f4fb}
+button:disabled{cursor:wait;opacity:.6}#folder{background:#174eac;color:white}li{margin:.6rem 0;overflow-wrap:anywhere}
+progress{width:100%}.muted{color:#52617a}#error{color:#a31622}a{color:#174eac}
+.notice{background:#fff5d6;border-left:4px solid #b47e00;padding:.8rem 1rem}
+.download{display:inline-block;padding:.4rem .7rem;border:1px solid #c1ccdc;border-radius:8px;margin-right:.4rem}
+</style>
+<main>
+<h1>Make smaller dataset uploads</h1>
+<p class="notice"><strong>Download this HTML file and open the saved copy directly in your browser.</strong> Saving dataset parts may be blocked inside a chat preview. Open the saved HTML file in Chrome, Edge, or Firefox.</p>
+<noscript><p class="notice">Scripts are blocked in this preview or browser. Download this HTML file and open the saved copy directly in your browser.</p></noscript>
+<p>Choose one of your original Roboflow ZIP files. This creates small numbered ZIP parts and a manifest. Your original file stays unchanged.</p>
+<p class="muted">Everything happens in this browser. This page has no server, external scripts, or network access. Each part is about 24 MiB, below the chat transfer limit.</p>
+<ol>
+<li>Select one original dataset ZIP and click <strong>Prepare parts</strong>.</li>
+<li>Click each <strong>Download</strong> link below, including the manifest. In supported browsers, <strong>Save all files to a folder</strong> saves everything together.</li>
+<li>Attach <strong>all numbered ZIP parts and the .parts.json manifest</strong> to the chat. Repeat for your second original dataset ZIP.</li>
+</ol>
+<p><input id="file" type="file" accept=".zip,application/zip" aria-label="Original dataset ZIP"></p>
+<p><button id="prepare">Prepare parts</button></p>
+<progress id="progress" max="1" value="0" aria-label="Preparation progress"></progress>
+<p id="status" role="status">No file prepared yet.</p>
+<p id="error" role="alert"></p>
+<p><button id="folder" hidden>Save all files to a folder</button></p>
+<p id="save-help" hidden>Use each Download link once. Your browser may ask where to save the file. These direct links avoid automatic batch downloads.</p>
+<ul id="items"></ul>
+<p class="muted">Keep the original ZIPs until reconstruction is confirmed. Do not unzip, rename, or edit the parts. If clicking a Download link does nothing, right-click it and choose <strong>Save link as…</strong>, or open the saved HTML file outside the chat preview.</p>
+</main>
+<script>
+"use strict";
+const CHUNK_SIZE = 24 * 1024 * 1024;
+const ENTRY = "chunk.bin";
+const CRC_TABLE = Array.from({length:256}, (_,i) => {
+  let c=i;
+  for(let j=0;j<8;j++) c=(c&1)?(0xedb88320^(c>>>1)):(c>>>1);
+  return c>>>0;
+});
+function crc32(bytes){
+  let c=0xffffffff;
+  for(const b of bytes) c=CRC_TABLE[(c^b)&255]^(c>>>8);
+  return (c^0xffffffff)>>>0;
+}
+function chunkZip(bytes,payload=bytes){
+  // A valid, uncompressed single-entry ZIP, so each upload has a normal ZIP format.
+  const name=new TextEncoder().encode(ENTRY), size=bytes.length, crc=crc32(bytes);
+  const local=new Uint8Array(30+name.length), l=new DataView(local.buffer);
+  l.setUint32(0,0x04034b50,true);l.setUint16(4,20,true);
+  l.setUint32(14,crc,true);l.setUint32(18,size,true);l.setUint32(22,size,true);
+  l.setUint16(26,name.length,true);local.set(name,30);
+  const central=new Uint8Array(46+name.length), c=new DataView(central.buffer);
+  c.setUint32(0,0x02014b50,true);c.setUint16(4,20,true);c.setUint16(6,20,true);
+  c.setUint32(16,crc,true);c.setUint32(20,size,true);c.setUint32(24,size,true);
+  c.setUint16(28,name.length,true);central.set(name,46);
+  const end=new Uint8Array(22), e=new DataView(end.buffer);
+  e.setUint32(0,0x06054b50,true);e.setUint16(8,1,true);e.setUint16(10,1,true);
+  e.setUint32(12,central.length,true);e.setUint32(16,local.length+size,true);
+  return new Blob([local,payload,central,end],{type:"application/zip"});
+}
+if(typeof module!=="undefined") module.exports={chunkZip,crc32};
+if(typeof document!=="undefined") {
+  const byId=id=>document.getElementById(id);
+  let prepared=[], urls=[];
+  let preparing=false,saving=false;
+  byId("prepare").onclick=async()=>{
+    const file=byId("file").files[0];
+    byId("error").textContent="";
+    if(!file || !file.name.toLowerCase().endsWith(".zip")){
+      byId("error").textContent="Choose an original dataset ZIP first.";return;
+    }
+    if(!globalThis.crypto?.subtle){
+      byId("error").textContent="This browser cannot calculate the checksums here. Open the downloaded HTML file in a current Chrome, Edge, or Firefox browser.";return;
+    }
+    if(!file.size){byId("error").textContent="The chosen file is empty.";return;}
+    if(preparing||saving)return;
+    preparing=true;
+    byId("prepare").disabled=true;byId("folder").hidden=true;byId("save-help").hidden=true;byId("items").replaceChildren();
+    byId("progress").value=0;
+    for(const u of urls) URL.revokeObjectURL(u);
+    urls=[];prepared=[];
+    const manifest={format:"cribwatch-zip-parts-v1",file_name:file.name,size:file.size,parts:[]};
+    const count=Math.ceil(file.size/CHUNK_SIZE);
+    try{
+      for(let i=0;i<count;i++){
+        byId("status").textContent=`Preparing part ${i+1} of ${count}…`;
+        const bytes=new Uint8Array(await file.slice(i*CHUNK_SIZE,Math.min(file.size,(i+1)*CHUNK_SIZE)).arrayBuffer());
+        const hash=Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256",bytes)),b=>b.toString(16).padStart(2,"0")).join("");
+        const name=`${file.name}.part-${String(i+1).padStart(4,"0")}-of-${String(count).padStart(4,"0")}.zip`;
+        // Keep the prepared download backed by the original File, not a full
+        // in-memory copy of every chunk in a potentially large dataset.
+        const blob=chunkZip(bytes,file.slice(i*CHUNK_SIZE,Math.min(file.size,(i+1)*CHUNK_SIZE)));
+        manifest.parts.push({name,size:bytes.length,sha256:hash});
+        prepared.push({name,blob});
+        byId("progress").value=(i+1)/count;
+        // Yield so the page remains responsive while preparing larger archives.
+        await new Promise(resolve=>setTimeout(resolve,0));
+      }
+      const name=file.name+".parts.json";
+      prepared.push({name,blob:new Blob([JSON.stringify(manifest,null,2)+"\n"],{type:"application/json"})});
+      for(const item of prepared){
+        const li=document.createElement("li"), link=document.createElement("a");
+        const url=URL.createObjectURL(item.blob);urls.push(url);
+        link.href=url;link.download=item.name;link.className="download";link.textContent="Download";
+        link.addEventListener("click",()=>{
+          byId("status").textContent="Save requested for "+item.name+". Check your Downloads folder, then save the other links too.";
+        });
+        li.append(link,document.createTextNode(" "+item.name));byId("items").append(li);
+      }
+      byId("folder").hidden=typeof window.showDirectoryPicker!=="function";
+      byId("save-help").hidden=false;
+      byId("status").textContent=`Ready: ${count} ZIP part(s) plus one manifest. Upload all ${count+1} downloaded files to the chat.`;
+    }catch(error){byId("error").textContent="Preparation failed: "+error.message;}
+    finally{preparing=false;byId("prepare").disabled=false;}
+  };
+  byId("folder").onclick=async()=>{
+    if(saving||preparing||!prepared.length)return;
+    saving=true;byId("folder").disabled=true;byId("prepare").disabled=true;
+    byId("error").textContent="";
+    try{
+      // Invoke the permission prompt from the user click, before other awaits.
+      const parent=await window.showDirectoryPicker({id:"cribwatch-parts",mode:"readwrite"});
+      const name="CribWatch-parts-"+crypto.randomUUID();
+      const folder=await parent.getDirectoryHandle(name,{create:true});
+      for(let i=0;i<prepared.length;i++){
+        byId("status").textContent=`Saving file ${i+1} of ${prepared.length}…`;
+        const item=prepared[i];
+        const handle=await folder.getFileHandle(item.name,{create:true});
+        const writable=await handle.createWritable();
+        await item.blob.stream().pipeTo(writable);
+      }
+      byId("status").textContent=`Saved all ${prepared.length} files inside ${name} in the folder you chose. Upload every ZIP part and the manifest from that new folder.`;
+    }catch(error){
+      if(error.name==="AbortError")byId("status").textContent="Folder saving canceled. You can still use the individual Download links.";
+      else byId("error").textContent="Folder saving was blocked or failed: "+error.message+" Use the individual Download links in the saved HTML file opened outside the chat preview.";
+    }finally{saving=false;byId("folder").disabled=false;byId("prepare").disabled=false;}
+  };
+  // Retain URLs so links also work if the user saves the files slowly.
+  window.addEventListener("pagehide",()=>{for(const url of urls)URL.revokeObjectURL(url);});
+}
+</script>
+</html>

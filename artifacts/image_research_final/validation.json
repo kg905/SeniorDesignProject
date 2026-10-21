@@ -1,0 +1,83 @@
+{
+  "n_images": 873,
+  "n_babies": null,
+  "grouping_field": "source_group",
+  "n_evaluation_groups": 341,
+  "accuracy_all_images_unknown_counts_as_error": 0.35738831615120276,
+  "accuracy_95ci_group_cluster_bootstrap": [
+    0.3137473659382627,
+    0.4009398815625278
+  ],
+  "coverage": 0.5211912943871707,
+  "accuracy_on_accepted_only": 0.6857142857142857,
+  "unsafe_predicted_back_count": 40,
+  "unsafe_total": 582,
+  "class_order": [
+    "back",
+    "side",
+    "prone",
+    "unknown"
+  ],
+  "confusion_matrix": [
+    [
+      128,
+      19,
+      14,
+      130
+    ],
+    [
+      21,
+      89,
+      34,
+      141
+    ],
+    [
+      19,
+      36,
+      95,
+      147
+    ],
+    [
+      0,
+      0,
+      0,
+      0
+    ]
+  ],
+  "per_class": {
+    "back": {
+      "correct": 128,
+      "total": 291,
+      "recall": 0.43986254295532645,
+      "frame_binomial_95ci_descriptive_only": [
+        0.38398286241766094,
+        0.497309272887893
+      ]
+    },
+    "side": {
+      "correct": 89,
+      "total": 285,
+      "recall": 0.312280701754386,
+      "frame_binomial_95ci_descriptive_only": [
+        0.2612753026517034,
+        0.36827926185967785
+      ]
+    },
+    "prone": {
+      "correct": 95,
+      "total": 297,
+      "recall": 0.31986531986531985,
+      "frame_binomial_95ci_descriptive_only": [
+        0.2694092737914261,
+        0.37492166244507996
+      ]
+    }
+  },
+  "limitations": "Research posture labels only, not SIDS/airway outcomes. Intervals are uncertain with few babies. No event latency or false-alarm/hour claim from still images. No infant/session IDs: source-image groups cannot demonstrate accuracy on unseen babies. Generic frozen ImageNet features; no baby-presence/airway detector. Offline research only.",
+  "posture_95pct_point_estimates_met": false,
+  "research_95pct_point_target_met": false,
+  "exploratory": true,
+  "input_kind": "image_metrics",
+  "selected_head": "logistic_C_0.1",
+  "score_threshold": 0.8600000000000001
+}
