@@ -51,6 +51,8 @@ Do **not** create train/validation/test folders. We split after import, keeping 
 
 Setup uses a sparse code/reference checkout; it does not download all 5,814 original images again. The original images you select are in your uploaded ZIP. Training does not automatically publish those images to GitHub.
 
+Section 5 now fetches the two task assets directly from official MediaPipe storage with checksum verification and network timeouts. A 132-byte `.task` file is a Git LFS pointer, not a usable model. Matching pointers can be replaced by the verified downloads. Extraction reports initialization, the first completed image, every 10 images, and completion; it checkpoints every completed image. If an old section 5 was waiting on Git LFS, stop that cell, keep the runtime and current RUN/MANIFEST, pull the latest code with LFS smudging disabled, reload `cribwatch.assets` and `cribwatch.data`, and run the updated section 5. Do not repeat upload/import or reset the runtime to fix a model download.
+
 ## 5. Keep accuracy claims separate from the pilot
 
 Default evaluation uses source groups and remains **exploratory**. Code targets about 60/20/20 train/validation/test; you do not manually shuffle adjacent frames between them. Unknown/failed-pose predictions count as errors, not discarded test examples. If pose quality fails more than 5% of final test images, 95% all-image accuracy is unattainable under this gate without improving extraction.

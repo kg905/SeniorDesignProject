@@ -20,15 +20,22 @@ ASSETS = {
 }
 
 
-def download_models(directory):
+def download_models(directory, *, names=None):
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=True)
-    for name, (url, digest) in ASSETS.items():
+    for name in ASSETS if names is None else names:
+        url, digest = ASSETS[name]
         target = directory / name
         if target.exists():
-            if hashlib.sha256(target.read_bytes()).hexdigest() != digest:
+            existing = target.read_bytes()
+            if hashlib.sha256(existing).hexdigest() == digest:
+                print(f"Verified {name}", flush=True)
+                continue
+            is_pointer = (existing.startswith(b"version https://git-lfs.github.com/spec/v1\n")
+                          and f"oid sha256:{digest}\n".encode() in existing)
+            if not is_pointer:
                 raise ValueError(f"Checksum mismatch for existing {target}; preserve/investigate or remove it before downloading")
-            continue
+        print(f"Downloading {name} from official MediaPipe storage...", flush=True)
         temporary = target.with_suffix(".download")
         try:
             with urllib.request.urlopen(url, timeout=60) as response, temporary.open("wb") as f:
@@ -41,6 +48,7 @@ def download_models(directory):
             if hashlib.sha256(temporary.read_bytes()).hexdigest() != digest:
                 raise ValueError(f"Model download checksum mismatch: {name}")
             temporary.replace(target)
+            print(f"Verified {name}: {total:,} bytes", flush=True)
         finally:
             temporary.unlink(missing_ok=True)
 

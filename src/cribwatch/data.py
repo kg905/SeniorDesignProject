@@ -164,6 +164,7 @@ def extract_manifest(manifest, output, model_dir, *, workers=1):
     else:
         checkpoint.write_text(json.dumps(header) + "\n")
     todo = [r for r in rows if (r["image_path"], r["sha256"]) not in cached]
+    print(f"Extraction: {len(cached)}/{len(rows)} images saved; {len(todo)} remaining", flush=True)
     for row in rows:
         if (row["image_path"], row["sha256"]) in cached and hashlib.sha256(Path(row["image_path"]).read_bytes()).hexdigest() != row["sha256"]:
             raise ValueError("A checkpointed image changed; preserve the old run and create a new manifest")
@@ -174,11 +175,13 @@ def extract_manifest(manifest, output, model_dir, *, workers=1):
                 f.write(json.dumps(result, allow_nan=False) + "\n")
                 f.flush()
                 cached[(result["image_path"], result["sha256"])] = result
-                if len(cached) % 200 == 0:
+                if len(cached) == 1 or len(cached) % 10 == 0 or len(cached) == len(rows):
                     print(f"Extracted {len(cached)}/{len(rows)} images", flush=True)
     if todo:
         if workers == 1:
+            print("Initializing MediaPipe pose and face tasks...", flush=True)
             _init_extractor(str(model_dir))
+            print("MediaPipe ready; processing images...", flush=True)
             try:
                 consume(map(_extract_row, todo))
             finally:
@@ -193,4 +196,5 @@ def extract_manifest(manifest, output, model_dir, *, workers=1):
         row.update({k: record[k] for k in ("pose_ok", "quality_reason", "preprocessing", "feature_schema")})
     columns = list(rows[0])
     write_csv(output, rows, columns)
+    print(f"Saved features: {output}", flush=True)
     return len(rows)
