@@ -56,3 +56,10 @@ User confirmed keeping MediaPipe plus all twelve metrics and ONE posture classif
 - Official PyPI metadata lists MediaPipe 1.1.1 `py3-none-manylinux_2_28_aarch64` wheel. It does not justify installing the older CPython 3.11-only wheel on Python 3.13. Actual ARM64 import, camera/color, GPIO, latency/temperature, private Wi-Fi, audible output and battery/failure tests remain with the hardware teammate.
 
 95% requires reviewed labels, much better pose coverage than the original ~56%, a fresh infant/session-independent cohort, honest unknown-as-error reporting/per-class recall/intervals, and separate continuous-event testing. No clinical/SIDS-prevention claim is made. The GitHub update supplies the workflow and integration code, not completed label review or trained-accuracy validation.
+
+
+## Colab review interface fix
+
+The user reported a completed labeling cell with no visible images, including after enabling custom widgets. The old reviewer displayed child widgets inside an Output capture before displaying the parent; a hosted Colab frontend failure was not reproduced locally. Removed nested Output capture from the optional widget and added the default `review_console` image/input reviewer, which uses normal notebook image output and Python input instead of the widget renderer. It saves each explicit label immediately, resumes by reading reviewed flags, does not label an interrupted/current photo, checks image hashes, and reloads the CSV before saving so stale batches cannot erase labels saved elsewhere. The dropdown reviewer reports errors visibly and preserves progress.
+
+The full suite passed: **49 tests**, including five new targeted tests for label/quit/invalid-input handling, restart/resume, modified-image rejection, preservation of other saved rows, and the explicit widget image tree/save callback. The notebook's default section 4 and troubleshooting instructions use the no-widget path. Actual hosted Colab/browser rendering remains to be checked by the user; no claim is made that it was remotely tested here. Original images and review files were not modified by this fix.

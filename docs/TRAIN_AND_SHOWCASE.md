@@ -10,13 +10,15 @@ The notebook keeps your saved reviews in Drive and the originals unchanged. It p
 
 ## Step 2 — You separate/review the images
 
-For each image choose **back, side, prone/belly, or unknown/unclear**, then click **Save reviewed batch**. A `no_baby` scene label is also available for new empty-crib examples; it is for fault/background tests, not a fourth posture classifier. Fill real baby/session IDs only when known; leave them blank otherwise.
+The default reviewer does not require widgets. It displays one photo, then asks for **b** (back), **s** (side), **p** (belly/prone), **u** (unknown/unclear), **n** (no baby), or **q** (stop). Press **Enter**: each label is saved immediately. After 12 images, rerun the cell to continue. There is no Save Batch button in this mode. An unlabeled/unsaved photo remains pending. `no_baby` examples are for background/fault tests, not a fourth posture classifier.
+
+Optional face information can be typed after the label, e.g. `p visible` or `p occluded`. Existing real baby/session IDs are preserved; leave them blank unless actually known. The optional dropdown reviewer still supports those fields and Save reviewed batch, but the default image/input reviewer avoids blank-widget failures in Colab.
 
 You do not need to move files or create train/test folders. Your labels are recorded in a CSV. Optionally export reviewed copies into back/side/prone folders, but these are class folders, not evaluation splits. The first export includes human-reviewed non-conflicting labels only. Ambiguous images remain excluded.
 
 Review the 368 images with conflicting source labels together. The notebook's resolution helper clears a publisher conflict only when the whole original-source group has been human-reviewed and agrees on one known label. Incomplete/disagreeing groups stay quarantined; do not bulk-clear flags. Identical-image label disagreements must be resolved before export. The 1,000 baby/face images have no posture truth until you review them.
 
-The review widget hides model suggestions by default. For an independent second reviewer use `review_widget(..., blind=True)`, or a separate fresh review copy. Resolve test-label disagreements before showing reviewers model predictions.
+The default image/input reviewer never shows publisher/model suggestions. For an independent second reviewer use a separate fresh review copy; the optional widget also supports `blind=True`. Resolve test-label disagreements before showing reviewers model predictions.
 
 **Stop after labeling/export if you want us to retrain next.** Share the reviewed CSV plus any additional images it references through an authorized private route. Labels for the already-uploaded images can be matched using their SHA256; the same images need not be uploaded again. Do not publish private infant identities or recordings in this public GitHub repository.
 
@@ -115,3 +117,20 @@ python monitor_pi5.py --model models --models models --picamera --display --show
 Compare fixed permitted reference images in Colab/Pi using the same classifier/asset hashes. Test actual camera color/orientation, box alignment, pose coverage, score/state output, timing, latching, acknowledgement, mute, lost camera/inference/Wi-Fi, reboot recovery, actual sound and battery duration. Measure Pi FPS/temperature rather than guessing.
 
 For the showcase, show both the live scan and the separate held-out evaluation report, including errors/uncertainty. A few successful scans do not prove 95% accuracy. No actual Pi tests or improved reviewed-data accuracy have been completed in this workspace.
+
+
+## If an already-open Colab notebook shows no labeling interface
+
+Replace its step 4 cell with the following. This fast-forwards the code checkout, skips unnecessary LFS downloads, and resumes the existing Drive CSV. It does not recreate/delete your labels or reinstall dependencies.
+
+```python
+import os, subprocess
+subprocess.run(
+    ["git", "-C", "/content/SeniorDesignProject", "pull", "--ff-only"],
+    env=dict(os.environ, GIT_LFS_SKIP_SMUDGE="1"), check=True
+)
+from cribwatch.review_console import review_console
+review_console(REVIEW, batch_size=12)
+```
+
+The photo and the text input appear directly below this cell. Type a label and press Enter; q stops. No custom widget manager is needed. If REVIEW is undefined after a runtime restart, rerun sections 1 and 3 first without deleting the saved review CSV.
