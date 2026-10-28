@@ -22,9 +22,15 @@ class MetricsPredictor:
         report = json.loads(report_path.read_text()) if report_path.exists() else {}
         if not showcase and (report.get("model_sha256") != digest or not report.get("research_95pct_point_target_met")):
             raise ValueError("95% target not established for this artifact; use --showcase for an experimental demo")
-        self.metadata = {"model_sha256": digest, "feature_schema": self.predictor.artifact["schema_version"]}
+        adapter = self.predictor.artifact.get("vision_adapter")
+        self.metadata = {"model_sha256": digest, "feature_schema": self.predictor.artifact["schema_version"],
+                         "vision_adapter": adapter}
         pose_name = verify_classifier_assets(self.predictor.artifact, models_dir)
-        self.vision = Vision(models_dir, pose_name=pose_name)
+        if adapter is None:
+            self.vision = Vision(models_dir, pose_name=pose_name)
+        else:
+            from .hybrid_vision import HybridVision
+            self.vision = HybridVision(models_dir, pose_name=pose_name, adapter=adapter)
 
     def predict(self, rgb):
         observation = self.vision.observe(rgb)

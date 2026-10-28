@@ -32,6 +32,10 @@ class Vision:
             raise
 
     def observe(self, rgb):
+        return self._observe_prepared(self._prepare(rgb))
+
+    @staticmethod
+    def _prepare(rgb):
         import cv2
         import numpy as np
         if rgb.ndim != 3 or rgb.shape[2] != 3 or rgb.dtype != np.uint8:
@@ -40,6 +44,35 @@ class Vision:
         # same transform at runtime; otherwise geometric ratios shift with aspect.
         if rgb.shape[:2] != (640, 640):
             rgb = cv2.resize(rgb, (640, 640), interpolation=cv2.INTER_LINEAR)
+        return rgb
+
+    def observe_region(self, rgb, region):
+        """Infer on a crop, remapping 2D landmarks to the original 640x640 frame."""
+        import cv2
+        import numpy as np
+        rgb = self._prepare(rgb)
+        bounds = np.array(region, dtype=float)
+        if bounds.shape != (4,) or not np.isfinite(bounds).all():
+            return unknown("invalid_body_region")
+        x1, y1 = np.maximum(0, np.floor(bounds[:2] * 640)).astype(int)
+        x2, y2 = np.minimum(640, np.ceil(bounds[2:] * 640)).astype(int)
+        if x2 - x1 < 16 or y2 - y1 < 16:
+            return unknown("body_region_too_small")
+        crop = cv2.resize(rgb[y1:y2, x1:x2], (640, 640), interpolation=cv2.INTER_LINEAR)
+        return self._observe_prepared(crop, region=(x1 / 640, y1 / 640, x2 / 640, y2 / 640))
+
+    def face_summary(self, rgb):
+        """Dense face landmarks can be measured even when a body pose is missing."""
+        import numpy as np
+        rgb = self._prepare(rgb)
+        image = self.mp.Image(image_format=self.mp.ImageFormat.SRGB, data=np.ascontiguousarray(rgb))
+        face = self.face.detect(image)
+        count = len(face.face_landmarks)
+        return count, len(face.face_landmarks[0]) if count == 1 else 0
+
+    def _observe_prepared(self, rgb, region=None):
+        import numpy as np
+        import copy
         image = self.mp.Image(image_format=self.mp.ImageFormat.SRGB, data=np.ascontiguousarray(rgb))
         pose = self.pose.detect(image)
         if len(pose.pose_landmarks) != 1:
@@ -47,8 +80,14 @@ class Vision:
         face = self.face.detect(image)
         if len(face.face_landmarks) > 1:
             return unknown("multiple_faces")
+        landmarks = pose.pose_landmarks[0]
+        if region is not None:
+            x1, y1, x2, y2 = region
+            landmarks = [copy.copy(point) for point in landmarks]
+            for point in landmarks:
+                point.x, point.y = x1 + point.x * (x2 - x1), y1 + point.y * (y2 - y1)
         return extract_metrics(
-            pose.pose_landmarks[0], rgb.shape[1], rgb.shape[0],
+            landmarks, 640, 640,
             world=pose.pose_world_landmarks[0] if pose.pose_world_landmarks else None,
             face_count=len(face.face_landmarks),
             face_landmark_count=len(face.face_landmarks[0]) if face.face_landmarks else 0,
@@ -65,3 +104,10 @@ class Vision:
 
     def __exit__(self, *args):
         self.close()
+
+
+def create_vision(model_dir, *, pose_name="pose_landmarker_lite.task", adapter=None):
+    if adapter is None:
+        return Vision(model_dir, pose_name=pose_name)
+    from .hybrid_vision import HybridVision
+    return HybridVision(model_dir, pose_name=pose_name, adapter=adapter)

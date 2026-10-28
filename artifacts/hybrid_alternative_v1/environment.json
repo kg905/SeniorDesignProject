@@ -1,0 +1,14 @@
+{
+  "python": "3.12.14",
+  "machine": "x86_64",
+  "mediapipe": "1.1.1",
+  "opencv-contrib-python": "4.12.0.88",
+  "numpy": "2.2.6",
+  "scikit-learn": "1.7.2",
+  "joblib": "1.6.0",
+  "torch": "2.9.1+cpu",
+  "torchvision": "0.24.1+cpu",
+  "ultralytics": "8.3.200",
+  "ultralytics-thop": "2.2.3",
+  "polars": "2.1.0"
+}

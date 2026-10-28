@@ -11,7 +11,7 @@ from .policy import AlarmPolicy
 from .transport import AlarmClient, get_key
 from .camera import LatestCamera
 from .alarm_runtime import receiver
-from .vision import Vision
+from .vision import create_vision
 
 
 def monitor(args):
@@ -46,7 +46,7 @@ def monitor(args):
     sender.start()
     camera = None
     try:
-        with Vision(args.models, pose_name=pose_name) as vision:
+        with create_vision(args.models, pose_name=pose_name, adapter=predictor.artifact.get("vision_adapter")) as vision:
             camera = LatestCamera(args.source, picamera=args.picamera)
             seen = -1
             while True:

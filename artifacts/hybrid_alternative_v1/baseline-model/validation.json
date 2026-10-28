@@ -1,0 +1,92 @@
+{
+  "n_images": 888,
+  "n_babies": null,
+  "grouping_field": "source_group",
+  "n_evaluation_groups": 341,
+  "accuracy_all_images_unknown_counts_as_error": 0.21509009009009009,
+  "accuracy_95ci_group_cluster_bootstrap": [
+    0.18019161978537304,
+    0.2502935870100049
+  ],
+  "coverage": 0.40540540540540543,
+  "accuracy_on_accepted_only": 0.5305555555555556,
+  "unsafe_predicted_back_count": 45,
+  "unsafe_total": 629,
+  "class_order": [
+    "back",
+    "side",
+    "prone",
+    "unknown"
+  ],
+  "confusion_matrix": [
+    [
+      72,
+      19,
+      31,
+      137
+    ],
+    [
+      27,
+      55,
+      33,
+      173
+    ],
+    [
+      18,
+      41,
+      64,
+      218
+    ],
+    [
+      0,
+      0,
+      0,
+      0
+    ]
+  ],
+  "per_class": {
+    "back": {
+      "correct": 72,
+      "total": 259,
+      "recall": 0.277992277992278,
+      "frame_binomial_95ci_descriptive_only": [
+        0.2269786231335314,
+        0.3354952707644209
+      ]
+    },
+    "side": {
+      "correct": 55,
+      "total": 288,
+      "recall": 0.1909722222222222,
+      "frame_binomial_95ci_descriptive_only": [
+        0.14976046909639243,
+        0.2403193340978402
+      ]
+    },
+    "prone": {
+      "correct": 64,
+      "total": 341,
+      "recall": 0.187683284457478,
+      "frame_binomial_95ci_descriptive_only": [
+        0.1498047608073186,
+        0.23252008862224846
+      ]
+    }
+  },
+  "limitations": "Research posture labels only, not SIDS/airway outcomes. Intervals are uncertain with few babies. No event latency or false-alarm/hour claim from still images. No infant/session IDs: source-image groups cannot demonstrate accuracy on unseen babies.",
+  "posture_95pct_point_estimates_met": false,
+  "research_95pct_point_target_met": false,
+  "exploratory": true,
+  "score_threshold": 0.5,
+  "requested_min_validation_coverage": 0.5,
+  "validation_coverage_constraint_met": false,
+  "pose_gate_coverage_ceiling": 0.5664414414414415,
+  "selected_classifier": "gradient_boosting_leaves15",
+  "vision_assets": {
+    "pose_landmarker_lite.task": "59929e1d1ee95287735ddd833b19cf4ac46d29bc7afddbbf6753c459690d574a",
+    "face_landmarker.task": "64184e229b263107bc2b804c6625db1341ff2bb731874b0bcc2fe6544e0bc9ff"
+  },
+  "vision_adapter": null,
+  "features_sha256": "1a955e99825fd8a8f353ed55e7c3b6dcbcea878fd7b1b1f3f549c149b649270b",
+  "model_sha256": "ee07285d3f2f45a8cc3caef8b10ca9a156545c1a2edf8525f04d15db1f55220b"
+}

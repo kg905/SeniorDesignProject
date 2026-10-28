@@ -1,0 +1,11 @@
+# Additional packages only. Install training/requirements.txt first (Pi: requirements-pi5.txt).
+# Then install ultralytics==8.3.200 with --no-deps so its opencv-python dependency
+# does not add a second cv2 distribution alongside the pinned opencv-contrib-python.
+torch==2.9.1
+torchvision==0.24.1
+matplotlib>=3.8,<4
+PyYAML>=6,<7
+requests>=2.32,<3
+psutil>=5.9,<8
+polars>=1,<3
+ultralytics-thop>=2.0,<3

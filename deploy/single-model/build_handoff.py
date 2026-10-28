@@ -28,6 +28,22 @@ def build(model, output, root=None):
         if hashlib.sha256(path.read_bytes()).hexdigest() != expected:
             raise ValueError("MediaPipe asset checksum mismatch")
         files[f"models/{name}"] = path
+        receipt = path.with_name(path.name + ".source.json")
+        if receipt.exists():
+            files[f"models/{receipt.name}"] = receipt
+    adapter = artifact.get("vision_adapter")
+    if adapter is not None:
+        from cribwatch.hybrid_vision import validate_adapter
+        validate_adapter(adapter)
+        path = root / "models" / adapter["yolo_name"]
+        if hashlib.sha256(path.read_bytes()).hexdigest() != adapter["yolo_sha256"]:
+            raise ValueError("YOLO asset checksum mismatch")
+        files[f"models/{path.name}"] = path
+        files["requirements-hybrid.txt"] = root / "training/requirements-hybrid.txt"
+        files["HYBRID.md"] = root / "docs/HYBRID_ALTERNATIVE.md"
+        for name in ("YOLO_ATTRIBUTION.md", "YOLO_LICENSE.txt"):
+            if (root / "models" / name).exists():
+                files[f"models/{name}"] = root / "models" / name
     for name in ("validation.json", "classifier_search.json"):
         if (model / name).exists():
             files[f"models/{name}"] = model / name
@@ -39,7 +55,7 @@ def build(model, output, root=None):
     # Include the shared predictor/feature code, not notebooks or raw images.
     runtime_modules = ("__init__.py", "camera.py", "alarm_runtime.py", "policy.py", "transport.py",
                        "tcp_alarm.py", "display.py", "showcase.py", "metrics_model.py",
-                       "learning.py", "features.py", "vision.py", "data.py", "assets.py")
+                       "learning.py", "features.py", "vision.py", "hybrid_vision.py", "data.py", "assets.py")
     for name in runtime_modules:
         path = root / "src/cribwatch" / name
         files[f"src/cribwatch/{path.name}"] = path

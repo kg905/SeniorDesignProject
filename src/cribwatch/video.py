@@ -7,7 +7,7 @@ from pathlib import Path
 from .learning import Predictor
 from .assets import verify_classifier_assets
 from .policy import AlarmPolicy, PolicyConfig
-from .vision import Vision
+from .vision import create_vision
 
 
 def analyze_video(source, classifier, models, output, *, sample_fps=5, allow_exploratory=False):
@@ -29,7 +29,7 @@ def analyze_video(source, classifier, models, output, *, sample_fps=5, allow_exp
             raise ValueError("Video must supply valid frame rate for temporal analysis")
         Path(output).parent.mkdir(parents=True, exist_ok=True)
         frame_index, next_time = 0, 0.0
-        with Vision(models, pose_name=pose_name) as vision, open(output, "x") as log:
+        with create_vision(models, pose_name=pose_name, adapter=predictor.artifact.get("vision_adapter")) as vision, open(output, "x") as log:
             while True:
                 ok, bgr = cap.read()
                 if not ok:

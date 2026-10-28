@@ -1,0 +1,116 @@
+[
+  {
+    "schema_version": 1,
+    "timestamp": "2026-10-28T05:22:18.470+00:00",
+    "posture": "unknown",
+    "risk": "unknown",
+    "confidence": 0.3576588036416697,
+    "reason": "low_model_score",
+    "state": "observing",
+    "baby_alarm": false,
+    "monitor_fault": true,
+    "scores": {
+      "back": 0.3576588036416697,
+      "prone": 0.31440928340784524,
+      "side": 0.32793191295048524
+    },
+    "inference_ms": 177.7028779979446,
+    "risk_basis": "experimental_posture_proxy_not_medical_risk",
+    "image": "istockphoto-1201146744-612x612_jpg.rf.092aa10733d75f2960df7f8621e63edc.jpg",
+    "model_sha256": "84e76b3414e4ae05b6c18a1baa5ff4431127a418e2663f630c69018daca10138",
+    "experimental_showcase": true,
+    "metrics": {
+      "shoulder_vec_mag": 0.6772399596805264,
+      "hip_vec_mag": 0.31715773635808275,
+      "shoulder_angle_deg": -86.59014064501201,
+      "hip_angle_deg": -88.76595466791392,
+      "shoulder_hip_angle_diff": 2.1758140229019034,
+      "left_shoulder_visibility": 0.9764367341995239,
+      "right_shoulder_visibility": 0.9913442134857178,
+      "left_hip_visibility": 0.9243525266647339,
+      "right_hip_visibility": 0.9631940126419067,
+      "face_detected": 1.0,
+      "face_landmark_count": 478.0,
+      "head_lift_ratio": null
+    },
+    "bounding_box": [
+      0.11197283804416656,
+      0.16594174325466154,
+      0.8535230910778046,
+      0.8081189858913421
+    ]
+  },
+  {
+    "schema_version": 1,
+    "timestamp": "2026-10-28T05:22:18.561+00:00",
+    "posture": "unknown",
+    "risk": "unknown",
+    "confidence": 0.0,
+    "reason": "no_pose",
+    "state": "observing",
+    "baby_alarm": false,
+    "monitor_fault": true,
+    "scores": {},
+    "inference_ms": 87.26704499713378,
+    "risk_basis": "experimental_posture_proxy_not_medical_risk",
+    "image": "00293_jpg.rf.0396613214b079097a52e22aed72a54a.jpg",
+    "model_sha256": "84e76b3414e4ae05b6c18a1baa5ff4431127a418e2663f630c69018daca10138",
+    "experimental_showcase": true,
+    "metrics": {
+      "shoulder_vec_mag": null,
+      "hip_vec_mag": null,
+      "shoulder_angle_deg": null,
+      "hip_angle_deg": null,
+      "shoulder_hip_angle_diff": null,
+      "left_shoulder_visibility": null,
+      "right_shoulder_visibility": null,
+      "left_hip_visibility": null,
+      "right_hip_visibility": null,
+      "face_detected": null,
+      "face_landmark_count": null,
+      "head_lift_ratio": null
+    },
+    "bounding_box": null
+  },
+  {
+    "schema_version": 1,
+    "timestamp": "2026-10-28T05:22:18.693+00:00",
+    "posture": "prone",
+    "risk": "high",
+    "confidence": 0.66709512332779,
+    "reason": "ok",
+    "state": "observing",
+    "baby_alarm": false,
+    "monitor_fault": false,
+    "scores": {
+      "back": 0.18913066197663372,
+      "prone": 0.66709512332779,
+      "side": 0.1437742146955763
+    },
+    "inference_ms": 126.97043899970595,
+    "risk_basis": "experimental_posture_proxy_not_medical_risk",
+    "image": "65_jpg.rf.64c1f2c21a419838e088ed5993b630c4.jpg",
+    "model_sha256": "84e76b3414e4ae05b6c18a1baa5ff4431127a418e2663f630c69018daca10138",
+    "experimental_showcase": true,
+    "metrics": {
+      "shoulder_vec_mag": 0.9920099169367086,
+      "hip_vec_mag": 0.6584769765114891,
+      "shoulder_angle_deg": -3.3945721001992837,
+      "hip_angle_deg": -4.5558015555455,
+      "shoulder_hip_angle_diff": 1.1612294553462164,
+      "left_shoulder_visibility": 0.9959361553192139,
+      "right_shoulder_visibility": 0.9847639203071594,
+      "left_hip_visibility": 0.9980260133743286,
+      "right_hip_visibility": 0.9969456791877747,
+      "face_detected": 0.0,
+      "face_landmark_count": 0.0,
+      "head_lift_ratio": null
+    },
+    "bounding_box": [
+      0.13721433520317078,
+      0.16606271803379058,
+      0.7548716044425965,
+      0.9250196611881256
+    ]
+  }
+]

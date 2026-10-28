@@ -130,9 +130,16 @@ def validation_key(report):
 
 def _select_threshold(model, rows, minimum_coverage):
     y = np.array([r["posture"] for r in rows])
+    # Thresholds change rejection only, not probabilities. Compute inference once
+    # rather than predicting the entire validation set for each of 21 cutoffs.
+    probabilities = model.predict_proba(np.stack([feature_vector(r) for r in rows]))
+    raw = model.classes_[probabilities.argmax(axis=1)].astype(object)
+    scores = probabilities.max(axis=1)
+    valid = np.array([r.get("pose_ok") == "1" for r in rows])
     candidates = []
     for threshold in np.linspace(.5, 1.0, 21):
-        pred = predict_rows(model, rows, float(threshold))
+        pred = raw.copy()
+        pred[(scores < threshold) | ~valid] = "unknown"
         candidates.append((int(((y != "back") & (pred == "back")).sum()),
                            int(((pred != y) & (pred != "unknown")).sum()),
                            -int((pred != "unknown").sum()), float(threshold)))
@@ -151,6 +158,16 @@ def _vision_metadata(rows):
         raise ValueError("Mixed or incomplete pose extractor provenance; extract each variant separately")
     name, pose_digest, face_digest = next(iter(values))
     return classifier_assets({"vision_assets": {name: pose_digest, "face_landmarker.task": face_digest}})
+
+
+def _adapter_metadata(rows):
+    values = {r.get("vision_adapter", "") for r in rows}
+    if values == {""}:
+        return None
+    if len(values) != 1 or not next(iter(values)):
+        raise ValueError("Mixed vision adapters; extract and train alternatives separately")
+    from .hybrid_vision import validate_adapter
+    return validate_adapter(json.loads(next(iter(values))))
 
 
 def train(features_csv, output_dir, seed=42, *, exploratory=False, min_validation_coverage=0.5,
@@ -192,6 +209,7 @@ def train(features_csv, output_dir, seed=42, *, exploratory=False, min_validatio
     if set(r["posture"] for r in fit_rows) != set(LABELS):
         raise ValueError("Training pose-quality gate removed a class; improve the pose extractor or collect suitable images")
     vision_assets = _vision_metadata(rows)
+    vision_adapter = _adapter_metadata(rows)
     settings = [("random_forest_leaf3", RandomForestClassifier(n_estimators=200, min_samples_leaf=3,
                  class_weight="balanced_subsample", n_jobs=2, random_state=seed))]
     if search:
@@ -227,6 +245,7 @@ def train(features_csv, output_dir, seed=42, *, exploratory=False, min_validatio
                 "exploratory": exploratory, "evaluation_grouping": group_field,
                 "preprocessing": VISION_PREPROCESSING,
                 "vision_assets": vision_assets, "selected_classifier": selected_name,
+                "vision_adapter": vision_adapter,
                 "training_sha256": hashlib.sha256(Path(features_csv).read_bytes()).hexdigest()}
     with threadpool_limits(limits=2):
         validation = summarize(parts[1], predict_rows(model, parts[1], threshold), group_field=group_field)
@@ -244,6 +263,7 @@ def train(features_csv, output_dir, seed=42, *, exploratory=False, min_validatio
         report["pose_gate_coverage_ceiling"] = sum(r.get("pose_ok") == "1" for r in part) / len(part)
         report["selected_classifier"] = selected_name
         report["vision_assets"] = vision_assets
+        report["vision_adapter"] = vision_adapter
         report["features_sha256"] = artifact["training_sha256"]
     if not validation_only:
         with threadpool_limits(limits=2):

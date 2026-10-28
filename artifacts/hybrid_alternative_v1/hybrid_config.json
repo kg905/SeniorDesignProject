@@ -1,0 +1,12 @@
+{
+  "manifest_sha256": "823cc8c4c0f8f6215936bd69a651fae5a64a9f3069f68f9e267b6bd8bd0a146a",
+  "pose_variant": "lite",
+  "adapter": {
+    "kind": "yolo_mediapipe_keypoints_v1",
+    "yolo_name": "yolov8n-pose.pt",
+    "yolo_sha256": "c6fa93dd1ee4a2c18c900a45c1d864a1c6f7aba75d84f91648a30b7fb641d212",
+    "confidence": 0.25,
+    "padding": 0.2
+  },
+  "existing_features_sha256": "1a955e99825fd8a8f353ed55e7c3b6dcbcea878fd7b1b1f3f549c149b649270b"
+}

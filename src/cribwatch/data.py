@@ -2,6 +2,7 @@
 
 import csv
 import hashlib
+import json
 from pathlib import Path
 import math
 
@@ -110,15 +111,17 @@ def review_widget(manifest_path, batch_size=12, *, blind=False, show_suggestions
 
 _worker_vision = None
 _worker_assets = {}
+_worker_adapter = None
 
 
-def _init_extractor(model_dir, pose_name="pose_landmarker_lite.task"):
+def _init_extractor(model_dir, pose_name="pose_landmarker_lite.task", adapter=None):
     from multiprocessing.util import Finalize
-    from .vision import Vision
-    global _worker_vision, _worker_assets
+    from .vision import create_vision
+    global _worker_vision, _worker_assets, _worker_adapter
     _worker_assets = {name: hashlib.sha256((Path(model_dir) / name).read_bytes()).hexdigest()
                       for name in (pose_name, "face_landmarker.task")}
-    _worker_vision = Vision(model_dir, pose_name=pose_name)
+    _worker_adapter = adapter
+    _worker_vision = create_vision(model_dir, pose_name=pose_name, adapter=adapter)
     # Multiprocessing finalizers run before the native dispatcher's thread pool
     # shuts down; normal Python atexit callbacks run too late for MediaPipe.
     Finalize(None, _worker_vision.close, exitpriority=10)
@@ -141,10 +144,12 @@ def _extract_row(row):
             "preprocessing": VISION_PREPROCESSING, "feature_schema": SCHEMA_VERSION,
             "pose_model_name": pose_name, "pose_model_sha256": _worker_assets[pose_name],
             "face_model_sha256": _worker_assets["face_landmarker.task"],
+            "vision_adapter": json.dumps(_worker_adapter, sort_keys=True) if _worker_adapter else "",
+            "extraction_route": getattr(_worker_vision, "last_route", "full_frame"),
             "inference_ms": (time.perf_counter() - started) * 1000}
 
 
-def extract_manifest(manifest, output, model_dir, *, workers=1, pose_name="pose_landmarker_lite.task"):
+def extract_manifest(manifest, output, model_dir, *, workers=1, pose_name="pose_landmarker_lite.task", adapter=None):
     """Preserve annotation provenance; checkpoint expensive native inference."""
     import json
     from concurrent.futures import ProcessPoolExecutor
@@ -152,6 +157,9 @@ def extract_manifest(manifest, output, model_dir, *, workers=1, pose_name="pose_
     from .assets import POSE_VARIANTS
     if pose_name not in POSE_VARIANTS.values():
         raise ValueError("Choose an official Lite, Full, or Heavy pose asset")
+    if adapter is not None:
+        from .hybrid_vision import validate_adapter
+        validate_adapter(adapter)
     rows = read_csv(manifest)
     if not rows:
         raise ValueError("Empty manifest")
@@ -166,6 +174,10 @@ def extract_manifest(manifest, output, model_dir, *, workers=1, pose_name="pose_
               "schema": SCHEMA_VERSION, "preprocessing": VISION_PREPROCESSING,
               "models": {name: hashlib.sha256((Path(model_dir) / name).read_bytes()).hexdigest()
                          for name in sorted((pose_name, "face_landmarker.task"))}}
+    if adapter is not None:
+        if hashlib.sha256((Path(model_dir) / adapter["yolo_name"]).read_bytes()).hexdigest() != adapter["yolo_sha256"]:
+            raise ValueError("YOLO asset checksum mismatch")
+        header["adapter"] = adapter
     cached = {}
     if checkpoint.exists():
         with checkpoint.open() as f:
@@ -193,7 +205,7 @@ def extract_manifest(manifest, output, model_dir, *, workers=1, pose_name="pose_
     if todo:
         if workers == 1:
             print("Initializing MediaPipe pose and face tasks...", flush=True)
-            _init_extractor(str(model_dir), pose_name)
+            _init_extractor(str(model_dir), pose_name, adapter)
             print("MediaPipe ready; processing images...", flush=True)
             try:
                 consume(map(_extract_row, todo))
@@ -201,7 +213,7 @@ def extract_manifest(manifest, output, model_dir, *, workers=1, pose_name="pose_
                 _worker_vision.close()
         else:
             with ProcessPoolExecutor(max_workers=workers, mp_context=multiprocessing.get_context("spawn"),
-                                     initializer=_init_extractor, initargs=(str(model_dir), pose_name)) as pool:
+                                     initializer=_init_extractor, initargs=(str(model_dir), pose_name, adapter)) as pool:
                 consume(pool.map(_extract_row, todo, chunksize=8))
     for row in rows:
         record = cached[(row["image_path"], row["sha256"])]
@@ -209,6 +221,8 @@ def extract_manifest(manifest, output, model_dir, *, workers=1, pose_name="pose_
         row.update({k: record[k] for k in ("pose_ok", "quality_reason", "preprocessing", "feature_schema")})
         row.update({"pose_model_name": pose_name, "pose_model_sha256": header["models"][pose_name],
                     "face_model_sha256": header["models"]["face_landmarker.task"],
+                    "vision_adapter": json.dumps(adapter, sort_keys=True) if adapter else "",
+                    "extraction_route": record.get("extraction_route", "full_frame"),
                     "inference_ms": record.get("inference_ms", "")})
     columns = list(rows[0])
     write_csv(output, rows, columns)

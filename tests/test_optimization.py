@@ -8,7 +8,7 @@ import pytest
 from cribwatch import assets
 from cribwatch.data import read_csv, write_csv
 from cribwatch.features import FEATURES, LABELS
-from cribwatch.learning import train
+from cribwatch.learning import _select_threshold, train
 from cribwatch.optimize import diagnose_features, run_optimization
 
 
@@ -23,6 +23,24 @@ def rows_for_search():
             row.update({name: float(10 * i + .001 * group) for name in FEATURES})
             rows.append(row)
     return rows
+
+
+def test_threshold_sweep_runs_validation_inference_once():
+    import numpy as np
+    rows = rows_for_search()
+    class FixedModel:
+        classes_ = np.array(LABELS)
+        calls = 0
+        def predict_proba(self, values):
+            self.calls += 1
+            result = np.full((len(rows), 3), .1)
+            for i, row in enumerate(rows):
+                result[i, LABELS.index(row['posture'])] = .8
+            return result
+    model = FixedModel()
+    threshold, constraint_met = _select_threshold(model, rows, .5)
+    assert model.calls == 1
+    assert threshold == .5 and constraint_met
 
 
 def test_pose_variant_records_https_source_and_detects_changed_cache(tmp_path, monkeypatch):

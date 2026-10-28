@@ -28,6 +28,13 @@ POSE_VARIANTS = {
     "heavy": "pose_landmarker_heavy.task",
 }
 
+YOLO_ASSETS = {
+    "yolov8n-pose.pt": (
+        "https://github.com/ultralytics/assets/releases/download/v8.3.0/yolov8n-pose.pt",
+        "c6fa93dd1ee4a2c18c900a45c1d864a1c6f7aba75d84f91648a30b7fb641d212",
+    ),
+}
+
 
 def download_pose_variant(directory, variant):
     import json
@@ -102,7 +109,7 @@ def download_models(directory, *, names=None):
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=True)
     for name in ASSETS if names is None else names:
-        url, digest = ASSETS[name]
+        url, digest = (ASSETS | YOLO_ASSETS)[name]
         target = directory / name
         if target.exists():
             existing = target.read_bytes()
