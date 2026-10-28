@@ -16,7 +16,9 @@ from .vision import Vision
 
 def monitor(args):
     from .learning import Predictor
+    from .assets import verify_classifier_assets
     predictor = Predictor(args.classifier)
+    pose_name = verify_classifier_assets(predictor.artifact, args.models)
     policy = AlarmPolicy()
     client = AlarmClient(args.alarm_url, get_key()) if args.alarm_url else None
     if args.alarm_url is None:
@@ -44,7 +46,7 @@ def monitor(args):
     sender.start()
     camera = None
     try:
-        with Vision(args.models) as vision:
+        with Vision(args.models, pose_name=pose_name) as vision:
             camera = LatestCamera(args.source, picamera=args.picamera)
             seen = -1
             while True:

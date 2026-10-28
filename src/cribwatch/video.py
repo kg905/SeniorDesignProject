@@ -5,6 +5,7 @@ import math
 from pathlib import Path
 
 from .learning import Predictor
+from .assets import verify_classifier_assets
 from .policy import AlarmPolicy, PolicyConfig
 from .vision import Vision
 
@@ -16,6 +17,7 @@ def analyze_video(source, classifier, models, output, *, sample_fps=5, allow_exp
     if Path(output).exists():
         raise FileExistsError("Preserving existing video results; choose another output")
     predictor = Predictor(classifier, allow_exploratory=allow_exploratory, models_dir=models)
+    pose_name = verify_classifier_assets(predictor.artifact, models)
     policy = AlarmPolicy(PolicyConfig(max_gap_seconds=max(1.5, 2 / sample_fps)))
     cap = cv2.VideoCapture(str(source))
     count = 0
@@ -27,7 +29,7 @@ def analyze_video(source, classifier, models, output, *, sample_fps=5, allow_exp
             raise ValueError("Video must supply valid frame rate for temporal analysis")
         Path(output).parent.mkdir(parents=True, exist_ok=True)
         frame_index, next_time = 0, 0.0
-        with Vision(models) as vision, open(output, "x") as log:
+        with Vision(models, pose_name=pose_name) as vision, open(output, "x") as log:
             while True:
                 ok, bgr = cap.read()
                 if not ok:

@@ -20,12 +20,17 @@ def build(model, output, root=None):
     files["models/posture_model.joblib"] = model / "posture.joblib"
     files["models/test.json"] = model / "test.json"
     files["models/training_feature_percentiles.json"] = model / "training_feature_percentiles.json"
-    from cribwatch.assets import ASSETS
-    for name in ("pose_landmarker_lite.task", "face_landmarker.task"):
+    from cribwatch.assets import classifier_assets
+    import joblib
+    artifact = joblib.load(model / "posture.joblib")
+    for name, expected in classifier_assets(artifact).items():
         path = root / "models" / name
-        if hashlib.sha256(path.read_bytes()).hexdigest() != ASSETS[name][1]:
+        if hashlib.sha256(path.read_bytes()).hexdigest() != expected:
             raise ValueError("MediaPipe asset checksum mismatch")
         files[f"models/{name}"] = path
+    for name in ("validation.json", "classifier_search.json"):
+        if (model / name).exists():
+            files[f"models/{name}"] = model / name
     for name in ("monitor_pi5.py", "test_model.py", "alarm_receiver.py", "requirements-pi5.txt", "cribwatch-camera.service", "cribwatch-alarm.service"):
         files[name] = root / "deploy/single-model" / name
     files["README.md"] = root / "docs/PI5_HANDOFF.md"

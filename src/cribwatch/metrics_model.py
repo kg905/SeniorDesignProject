@@ -5,7 +5,7 @@ import math
 from pathlib import Path
 
 from .learning import Predictor
-from .assets import ASSETS
+from .assets import verify_classifier_assets
 from .vision import Vision
 
 
@@ -23,10 +23,8 @@ class MetricsPredictor:
         if not showcase and (report.get("model_sha256") != digest or not report.get("research_95pct_point_target_met")):
             raise ValueError("95% target not established for this artifact; use --showcase for an experimental demo")
         self.metadata = {"model_sha256": digest, "feature_schema": self.predictor.artifact["schema_version"]}
-        for name in ("pose_landmarker_lite.task", "face_landmarker.task"):
-            if hashlib.sha256((Path(models_dir) / name).read_bytes()).hexdigest() != ASSETS[name][1]:
-                raise ValueError("MediaPipe asset checksum mismatch")
-        self.vision = Vision(models_dir)
+        pose_name = verify_classifier_assets(self.predictor.artifact, models_dir)
+        self.vision = Vision(models_dir, pose_name=pose_name)
 
     def predict(self, rgb):
         observation = self.vision.observe(rgb)

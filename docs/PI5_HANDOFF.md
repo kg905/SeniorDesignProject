@@ -4,7 +4,7 @@ Based on the supplied [SIDS_Pi5_Team_Handoff.pdf](reference/SIDS_Pi5_Team_Handof
 
 ## Architecture and artifacts
 
-**Keep MediaPipe and the original 12-feature schema.** One Random Forest maps metrics to back/side/prone. A state machine maps posture to risk and alarm. No MobileNet/image embeddings are used by this path. MediaPipe pose/face models extract features; they are not competing posture classifiers.
+**Keep MediaPipe and the original 12-feature schema.** One selected tree classifier maps metrics to back/side/prone: the original Random Forest or the validation-selected Random Forest/Extra Trees/gradient boosting recipe from [the improvement workflow](IMPROVE_MODEL.md). A state machine maps posture to risk and alarm. No MobileNet/image embeddings are used by this path. MediaPipe pose/face models extract features; they are not competing posture classifiers.
 
 The PDF's V10 notebook and old receiver source were not supplied. We preserve actual repository feature/classifier/policy implementations, not unseen V10 logic. Do not fabricate `feature_ranges.joblib` or `risk_cutoffs.joblib`; current descriptive percentiles are JSON, and prototype alarm timing/category mapping is explicit code. These are not clinical safe ranges.
 
@@ -20,7 +20,7 @@ SIDS_Pi5_Deployment/
     posture_model.joblib
     test.json
     training_feature_percentiles.json
-    pose_landmarker_lite.task
+    pose_landmarker_lite.task   # or the selected Full/Heavy asset, exactly one
     face_landmarker.task
   src/cribwatch/...
 ```
@@ -64,7 +64,7 @@ print('Bundle hashes match')
 PY
 ```
 
-Official model URLs/SHA256 are pinned in `src/cribwatch/assets.py`; the ZIP includes them and the live predictor checks their hashes. If needed, use that module's `download_models` with normal verified HTTPS.
+Lite/face URLs and SHA256 are pre-pinned in `src/cribwatch/assets.py`. Full/Heavy variants are downloaded from versioned official HTTPS URLs with hashes recorded at download time. The selected asset hashes are bound into the trained classifier; the ZIP includes that exact pose asset plus face asset, and live/offline inference checks both. Do not rename a Full asset as Lite or substitute a different extractor after training. Full/Heavy speed on the actual Pi remains to be measured against the existing stale-frame limits.
 
 ## Offline check before camera startup
 
