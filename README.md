@@ -1,5 +1,7 @@
 # CribWatch research prototype
 
+**Start with the agreed MediaPipe + 12 metrics + ONE posture classifier workflow:** [label-first instructions](docs/TRAIN_AND_SHOWCASE.md) and [the Colab notebook](https://colab.research.google.com/github/kg905/SeniorDesignProject/blob/main/notebooks/label_and_train_colab.ipynb). You review your existing images first; then we extract features and retrain. The live scan displays a pose-derived box, posture-risk category, model score, and alarm state, with an explicit minimum alarm risk setting. The [Pi 5 handoff](docs/PI5_HANDOFF.md) addresses the supplied Arducam / Debian 13 / Python 3.13.5 setup and TCP 5000. Neither historical baseline achieved 95%; this update does not claim a new accuracy result. The old image-feature model remains a comparison artifact, not the selected deployment model.
+
 The repository includes the original Roboflow dataset ZIPs in `data/uploads`, extracted images/COCO annotations in `data/datasets`, official model assets in `models`, and final research models/reports in `artifacts`. Large archives and model binaries use **Git LFS**. Install Git LFS before cloning or pulling:
 
 ```bash

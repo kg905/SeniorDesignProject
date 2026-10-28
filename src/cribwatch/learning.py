@@ -30,6 +30,26 @@ def wilson(successes, total):
 
 def group_split(rows, seed=42, *, group_field="baby_id"):
     groups = np.array([r[group_field] for r in rows])
+    # A session/source link must not leak across folds just because baby IDs differ.
+    parent, owners = list(range(len(rows))), {}
+
+    def find(i):
+        while parent[i] != i:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        return i
+
+    fields = [group_field, "session_id", "source_group", "original_image_group"]
+    for i, row in enumerate(rows):
+        for field in fields:
+            value = row.get(field, "")
+            if value:
+                key = (field, value)
+                if key in owners:
+                    parent[find(i)] = find(owners[key])
+                else:
+                    owners[key] = i
+    groups = np.array([find(i) for i in range(len(rows))])
     y = np.array([r["posture"] for r in rows])
     if len(set(groups)) < 15:
         raise ValueError(f"At least 15 distinct {group_field} groups required; more are needed for a strong claim")
@@ -177,6 +197,7 @@ def train(features_csv, output_dir, seed=42, *, exploratory=False, min_validatio
             ranges[label][name] = np.quantile(finite, [.05, .5, .95]).tolist() if len(finite) else None
     out.mkdir(parents=True, exist_ok=True)
     joblib.dump(artifact, out / "posture.joblib")
+    test_report["model_sha256"] = hashlib.sha256((out / "posture.joblib").read_bytes()).hexdigest()
     for filename, obj in [("validation.json", validation), ("test.json", test_report),
                           ("training_feature_percentiles.json", {"note": "5th/50th/95th descriptive training percentiles; NOT medical safe ranges", "classes": ranges})]:
         (out / filename).write_text(json.dumps(obj, indent=2, allow_nan=False) + "\n")

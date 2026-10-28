@@ -1,0 +1,9 @@
+# Python 3.13 ARM64: MediaPipe 1.1.1 publishes a py3 manylinux_2_28_aarch64 wheel.
+# Use a NEW --system-site-packages venv; retain OS Picamera2/libcamera.
+# This env uses ONE pip cv2 distribution, matching training; do not install pip opencv-python too.
+mediapipe==1.1.1
+opencv-contrib-python==4.12.0.88
+numpy==2.2.6
+scikit-learn==1.7.2
+Pillow==12.3.0
+joblib==1.6.0

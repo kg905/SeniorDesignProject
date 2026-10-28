@@ -1,0 +1,20 @@
+[Unit]
+Description=CribWatch TCP 5000 portable alarm
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+# Replace pi and all paths with the real account/deployment location.
+User=pi
+WorkingDirectory=/home/pi/senior_design/SIDS_Pi5_Deployment
+EnvironmentFile=/etc/cribwatch.env
+Environment=GPIOZERO_PIN_FACTORY=lgpio
+ExecStart=/usr/bin/python3 alarm_receiver.py --gpio 17 --mute-button 27
+Restart=on-failure
+RestartSec=2
+NoNewPrivileges=true
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

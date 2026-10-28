@@ -11,10 +11,13 @@ class PolicyConfig:
     unknown_seconds: float = 2.0
     recovery_seconds: float = 3.0
     max_gap_seconds: float = 1.5
+    alarm_risk: str = "moderate"
 
     def __post_init__(self):
-        if any(not math.isfinite(v) or v <= 0 for v in vars(self).values()):
+        if any(not math.isfinite(v) or v <= 0 for k, v in vars(self).items() if k != "alarm_risk"):
             raise ValueError("All policy timings must be finite and positive")
+        if self.alarm_risk not in {"moderate", "high"}:
+            raise ValueError("alarm_risk must be moderate or high")
 
 
 class AlarmPolicy:
@@ -39,9 +42,10 @@ class AlarmPolicy:
         if posture != self.candidate or gap:
             self.candidate, self.since = posture, now
         elapsed = now - self.since
-        if posture not in {"side", "prone"} or gap:
+        trigger_postures = {"side", "prone"} if self.config.alarm_risk == "moderate" else {"prone"}
+        if posture not in trigger_postures or gap:
             self.unsafe_since = None
-        if posture in {"side", "prone"}:
+        if posture in trigger_postures:
             if self.unsafe_since is None:
                 self.unsafe_since = now
             delay = self.config.side_seconds if posture == "side" else self.config.prone_seconds

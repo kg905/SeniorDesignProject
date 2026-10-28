@@ -9,6 +9,7 @@ import hashlib
 import hmac
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
+import os
 import secrets
 import threading
 import time
@@ -20,6 +21,10 @@ def validate_key(key):
     if not isinstance(key, bytes) or len(key) < 32:
         raise ValueError("ALARM_SHARED_KEY must contain at least 32 bytes; generate with secrets.token_hex(32)")
     return key
+
+
+def get_key():
+    return validate_key(os.environ.get("ALARM_SHARED_KEY", "").encode())
 
 
 class ReceiverState:

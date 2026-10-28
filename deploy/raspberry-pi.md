@@ -1,5 +1,7 @@
 # Pi 5 vision / Pi 4 portable alarm
 
+**Legacy baseline instructions.** For the MediaPipe + one-classifier camera overlay and TCP 5000 receiver selected after the team's hardware handoff, use [docs/PI5_HANDOFF.md](../docs/PI5_HANDOFF.md), [docs/ALARM_PROTOCOL.md](../docs/ALARM_PROTOCOL.md), and [docs/TRAIN_AND_SHOWCASE.md](../docs/TRAIN_AND_SHOWCASE.md). Do not mix these HTTP/MediaPipe service commands with the new receiver. The protected shared-key and private-LAN procedures below remain applicable.
+
 These instructions target **64-bit Raspberry Pi OS Bookworm or Trixie**, Python 3.11–3.13, and a single infant in a fixed crib view. They have not been executed on physical Pi hardware here. A 32-bit OS is unsupported. The chosen MediaPipe release provides an ARM64 wheel; wheel availability alone does not establish device performance. Prefer a cooled Pi 5 for inference.
 
 The current uploaded-data artifacts are exploratory and below the accuracy target; **do not enable them for live baby monitoring**. The software rejects them in the live monitor. They can be used for permitted offline-video research with `analyze-video --allow-exploratory`. Hardware instructions below describe the development setup for a future independently evaluated model, not approval to deploy the current research artifacts.

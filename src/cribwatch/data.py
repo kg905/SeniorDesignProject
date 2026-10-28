@@ -49,7 +49,7 @@ def make_manifest(root, output):
     return len(rows)
 
 
-def review_widget(manifest_path, batch_size=12):
+def review_widget(manifest_path, batch_size=12, *, blind=False, show_suggestions=False):
     """Batch review avoids moving files; never asserts unreviewed labels as ground truth."""
     import ipywidgets as w
     from IPython.display import display, clear_output
@@ -57,6 +57,9 @@ def review_widget(manifest_path, batch_size=12):
     import html
 
     rows = read_csv(manifest_path)
+    for row in rows:
+        row.setdefault("human_verified", "0")
+        row.setdefault("label_source", "none")
     queue = [i for i, r in enumerate(rows) if r["reviewed"] != "1"]
     position = [0]
     out = w.Output()
@@ -76,13 +79,15 @@ def review_widget(manifest_path, batch_size=12):
                     im.thumbnail((260, 190))
                     buf = io.BytesIO()
                     im.save(buf, format="JPEG")
-                posture = w.Dropdown(options=["unknown", "back", "side", "prone"], value=row["posture"], description="Posture")
+                posture = w.Dropdown(options=["unknown", "back", "side", "prone", "no_baby"], value="unknown" if blind else row["posture"], description="Posture")
                 face = w.Dropdown(options=["unknown", "visible", "turned_away", "occluded"], value=row["face_state"], description="Face")
                 baby = w.Text(value=row["baby_id"], description="Baby ID")
                 session = w.Text(value=row["session_id"], description="Session")
                 controls.append((i, posture, face, baby, session))
-                hint = html.escape(row.get("suggested_posture", "none"))
-                display(w.VBox([w.HTML(value=f"Image {i + 1}; model suggestion: {hint} (verify visually)"),
+                hint = f"; model suggestion: {html.escape(row.get('suggested_posture', 'none'))} (verify visually)" if show_suggestions and not blind else ""
+                group = html.escape(row.get("source_group", "unassigned"))
+                conflict = "; SOURCE LABEL CONFLICT: stays quarantined until group adjudication" if row.get("label_conflict") == "1" else ""
+                display(w.VBox([w.HTML(value=f"Image {i + 1}; group: {group}{conflict}{hint}"),
                                 w.Image(value=buf.getvalue()), posture, face, baby, session]))
             button = w.Button(description="Save reviewed batch", button_style="success")
             status = w.HTML()
@@ -92,10 +97,7 @@ def review_widget(manifest_path, batch_size=12):
                 # independent training path still requires actual baby/session IDs.
                 for i, p, f, b, s in controls:
                     rows[i].update(posture=p.value, face_state=f.value, baby_id=b.value.strip(),
-                                   session_id=s.value.strip(), reviewed="1")
-                    if "human_verified" in rows[i]:
-                        rows[i]["human_verified"] = "1"
-                        rows[i]["label_source"] = "human_review"
+                                   session_id=s.value.strip(), reviewed="1", human_verified="1", label_source="human_review")
                     if "training_eligible" in rows[i]:
                         rows[i]["training_eligible"] = str(int(p.value != "unknown" and rows[i].get("label_conflict", "0") != "1"))
                 write_csv(manifest_path, rows, list(rows[0]))

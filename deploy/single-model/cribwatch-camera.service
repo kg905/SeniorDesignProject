@@ -1,0 +1,19 @@
+[Unit]
+Description=CribWatch experimental single-model camera (headless)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+# Replace pi and all paths with the real account/deployment location.
+User=pi
+WorkingDirectory=/home/pi/senior_design/SIDS_Pi5_Deployment
+EnvironmentFile=/etc/cribwatch.env
+ExecStart=/home/pi/senior_design/vision_env/bin/python monitor_pi5.py --model models --models models --picamera --showcase --alarm-risk moderate --alarm-host 192.168.50.1 --ack-file /tmp/cribwatch-ack
+Restart=on-failure
+RestartSec=2
+NoNewPrivileges=true
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

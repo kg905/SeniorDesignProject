@@ -69,6 +69,7 @@ def main(argv=None):
     p.add_argument("--alarm-url", help="Pi 4 server root, e.g. http://192.168.50.1:8765")
     p.add_argument("--ack-file", help="Operator creates this file to acknowledge after stable back")
     p = commands.add_parser("receiver")
+    p.add_argument("--protocol", choices=["http", "tcp"], default="http", help="New single-model showcase uses tcp --port 5000")
     p.add_argument("--host", default="0.0.0.0")
     p.add_argument("--port", type=int, default=8765)
     p.add_argument("--timeout", type=positive_float, default=5)

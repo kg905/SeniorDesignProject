@@ -22,6 +22,7 @@ class Observation:
     pose_ok: bool
     reason: str
     face_state: str = "unknown"
+    pose_box: tuple | None = None  # normalized xyxy, estimated from visible landmarks
 
 
 def unknown(reason):
@@ -68,8 +69,17 @@ def extract_metrics(landmarks, width, height, *, world=None, face_count=0,
             metrics["head_lift_ratio"] = float((mid_shoulder[2] - xyz[0, 2]) / length)
     in_frame = bool(((xy >= 0) & (xy <= [width, height])).all())
     good = bool(in_frame and (visibility >= min_visibility).all() and (presence >= min_visibility).all())
+    box = None
+    if good:
+        points = np.array([[p.x, p.y] for p in landmarks
+                           if p.visibility >= min_visibility and getattr(p, "presence", 1.) >= min_visibility
+                           and np.isfinite([p.x, p.y]).all() and 0 <= p.x <= 1 and 0 <= p.y <= 1])
+        if len(points) >= 4:
+            lo, hi = points.min(0), points.max(0)
+            pad = np.maximum((hi - lo) * .08, .02)
+            box = tuple(np.concatenate([np.maximum(lo - pad, 0), np.minimum(hi + pad, 1)]).tolist())
     return Observation(metrics, good, "ok" if good else "low_pose_quality",
-                       "visible" if face_count == 1 else "unknown")
+                       "visible" if face_count == 1 else "unknown", box)
 
 
 def feature_vector(metrics):

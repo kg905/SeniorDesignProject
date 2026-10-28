@@ -39,3 +39,20 @@ Validated in the provided Debian 13 x86-64 cloud environment with Python 3.12, M
 - The 12-feature baseline may be insufficient. Evaluate it on reviewed, identity-separated data before selecting a more capable image/keypoint model or making performance claims.
 
 Next data step: supply authorized exported images and baby/session metadata (or suitable identified recordings), confirm labels through review, then run the notebook. Clinical use requires a separate validation/regulatory process beyond this project prototype.
+
+
+## 2026-10-27: selected MediaPipe/12-metric classifier and live showcase
+
+User confirmed keeping MediaPipe plus all twelve metrics and ONE posture classifier. The unfinished image-only/TensorFlow path was removed from this update. Original MobileNet/image-baseline reports remain historical results, not the selected deployment.
+
+- Read the attached Pi 5 handoff. It reports Arducam IMX290, Debian 13 ARM64, Python 3.13.5, and TCP 5000 on Pi 4. V10 notebook/receiver source were not provided; exact compatibility with unseen V10 artifacts is not claimed.
+- Added label-first Colab workflow using the original 5,814 supplied images, persistent reviews, conservative conflict adjudication, reviewed-only export, optional class folders, and SHA256 rebasing of shared CSVs. Unknowns are not promoted to labels. Actual human review is still pending.
+- Preserved the 12-feature schema/preprocessing and one Random Forest. Related identity/session/source groups stay together; new training reports bind the serialized classifier SHA256. No improved infant model was trained or 95% result established by this change.
+- Added MediaPipe-derived normalized pose box, posture-risk overlay, optional scan JPEG/JSON and annotated MP4, fresh-frame/inference watchdog, and explicit moderate/high alarm trigger setting. A box is a landmark-derived region, not a separate validated baby/airway detector; some occluded body parts may lie outside it.
+- Local real inference on three previously accepted baseline examples exercised pose/face extraction, the existing serialized classifier, all 12 metrics, pose boxes and risk overlays. Those selected examples are a functional check, not an accuracy estimate.
+- Local six-second replay-camera harness exercised real MediaPipe + baseline classifier -> overlay/recording -> authenticated TCP receiver -> latched alert. It wrote 30 status samples, observed an alarm and a connected receiver, then stale-image unknown/fault and an explicit shutdown fault. This was a software bench replay, not a live Pi/infant hardware test.
+- Full Python suite: **44 passed**. New coverage includes box geometry/rendering, risk-trigger selection, latch continuity, repeated-frame rejection, persistent stale faults, variable-resolution video recording, human-label provenance/conflict handling/CSV rebasing, actual TCP authentication/replay/version/timeout, and handoff ZIP contents/checksums/standalone imports. Handoff packaging tests use explicitly artificial features, not validated infant artifacts.
+- `pip check` passed in the existing MediaPipe/sklearn environment. Notebook source cells parsed; hosted Colab UI/training execution remains unverified. The Pi 4 receiver launcher runs with Python standard library only when GPIO is omitted.
+- Official PyPI metadata lists MediaPipe 1.1.1 `py3-none-manylinux_2_28_aarch64` wheel. It does not justify installing the older CPython 3.11-only wheel on Python 3.13. Actual ARM64 import, camera/color, GPIO, latency/temperature, private Wi-Fi, audible output and battery/failure tests remain with the hardware teammate.
+
+95% requires reviewed labels, much better pose coverage than the original ~56%, a fresh infant/session-independent cohort, honest unknown-as-error reporting/per-class recall/intervals, and separate continuous-event testing. No clinical/SIDS-prevention claim is made. The GitHub update supplies the workflow and integration code, not completed label review or trained-accuracy validation.

@@ -1,0 +1,8 @@
+# Training/Colab: one MediaPipe feature pipeline and one posture classifier. CPU is enough.
+mediapipe==1.1.1
+opencv-contrib-python==4.12.0.88
+numpy==2.2.6
+scikit-learn==1.7.2
+Pillow==12.3.0
+joblib==1.6.0
+ipywidgets==8.1.7

@@ -22,3 +22,8 @@ __pycache__/
 /artifacts/posture_baseline_v1/
 /artifacts/dataset_audit_v2/*.checkpoint.jsonl
 /artifacts/dataset_audit_v2/extractor_*
+
+# New per-run training exports, snapshots, and private recordings stay local.
+/runs/
+/snapshots/
+/demo-recordings/
