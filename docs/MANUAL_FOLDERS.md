@@ -81,6 +81,9 @@ ROOT = Path('/content/SeniorDesignProject')
 os.chdir(ROOT)
 subprocess.run(['git', 'pull', '--ff-only'],
                env=dict(os.environ, GIT_LFS_SKIP_SMUDGE='1'), check=True)
+import importlib
+sys.path.insert(0, str(ROOT / 'src'))
+importlib.invalidate_caches()
 from google.colab import files
 from cribwatch.colab_io import local_zip_run
 RUN, ZIP_PATH = local_zip_run()
@@ -89,3 +92,6 @@ print('Local run:', RUN)
 ```
 
 Continue at section 4. The run now lives under /content/cribwatch-runs, so download the trained deployment ZIP in section 8 before disconnecting/resetting the runtime. Source photos remain on your computer. An old “Also in Drive” print label in a previously opened cell does not change the actual local path. The updated section 8 offers an optional explicit Drive backup after local processing; Drive success is never assumed from its earlier Mounted message.
+
+
+If an already-open session says `No module named cribwatch`, add `sys.path.insert(0, '/content/SeniorDesignProject/src')` before importing project modules. The updated notebook includes this explicitly so a runtime restart is not needed merely to activate an editable-install path. Dependencies from section 2 must still be installed.
