@@ -1,5 +1,7 @@
 # Pi 5 / Arducam: MediaPipe + 12 metrics + one classifier
 
+If your ZIP also contains **HYBRID.md** and **requirements-hybrid.txt**, it is the separate YOLO + MediaPipe alternative. Follow HYBRID.md to install its additional Torch/Ultralytics packages before running the commands below. Its YOLO fallback changes the confidence source for four visibility entries and can leave head depth missing; use its matching classifier and assets together.
+
 Based on the supplied [SIDS_Pi5_Team_Handoff.pdf](reference/SIDS_Pi5_Team_Handoff.pdf), sections 2–4 and 7. The teammate reports Pi 5 4 GB, Debian 13 Trixie ARM64, Python 3.13.5, Arducam IMX290 CSI, working Picamera2, OpenCV 4.10.0 and sklearn 1.4.2 in `~/senior_design/sids_env`. These are reported hardware results, not tests performed here.
 
 ## Architecture and artifacts
