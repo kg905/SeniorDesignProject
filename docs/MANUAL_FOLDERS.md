@@ -42,8 +42,8 @@ Do **not** create train/validation/test folders. We split after import, keeping 
 [Open notebooks/manual_folders_colab.ipynb](https://colab.research.google.com/github/kg905/SeniorDesignProject/blob/main/notebooks/manual_folders_colab.ipynb).
 
 1. Use a CPU runtime; run setup cells individually. No label widgets/text-label prompts are used.
-2. Mount Drive so the upload, manifest and run outputs persist. Each run uses a new dated folder under My Drive/CribWatchManual.
-3. In the upload section, select **BabyTraining.zip**, not the original unsorted dataset ZIPs. Alternatively set the provided `ZIP_IN_DRIVE` path if it is already in Drive.
+2. Upload and process in local Colab storage under `/content/cribwatch-runs`. Drive is optional and is not used for active upload/training writes. **Download section 8 results before resetting/closing the runtime; local storage is temporary.**
+3. In the upload section, select **BabyTraining.zip**, not the original unsorted dataset ZIPs. Alternatively set `ZIP_IN_DRIVE` if it is already in Drive; that option reconnects Drive and copies the ZIP locally before processing.
 4. The notebook extracts into a new directory and prints class counts, eligible unique counts, duplicate/conflict information, and how many selected images match the original audit.
 5. It uses your class folders as human-provided labels. Unknowns stay excluded. Identical/declared-original copies with conflicting folder labels are quarantined; inspect conflicts.json and fix the computer folders before uploading a corrected ZIP.
 6. Original file hashes match to the existing dataset audit to preserve known source/augmentation grouping even if filenames differ. New/unmatched images also get conservative exact/pixel/perceptual grouping. None of this establishes infant independence.
@@ -63,6 +63,29 @@ The supplied public data/test results have already been inspected. Regrouping/re
 
 ## 6. Add more later
 
-Add/correct images in the same **computer** class folders, make an updated ZIP of the entire BabyTraining folder, and start a new notebook run. Each run reimports your current folder labels and preserves prior runs. There is no online retraining merely because files were added. Keep original filenames/bytes and known recording grouping. Do not repeatedly tune against a final test cohort already inspected.
+Add/correct images in the same **computer** class folders, make an updated ZIP of the entire BabyTraining folder, and start a new notebook run. Each run reimports your current folder labels and leaves prior local runs intact while that runtime exists. Keep downloaded results on your computer before ending/resetting the runtime. There is no online retraining merely because files were added. Keep original filenames/bytes and known recording grouping. Do not repeatedly tune against a final test cohort already inspected.
 
 For Pi deployment, live pose boxes/risk categories and TCP 5000 alarm behavior, follow [PI5_HANDOFF.md](PI5_HANDOFF.md) and [ALARM_PROTOCOL.md](ALARM_PROTOCOL.md). The new intake route changes labeling convenience, not the agreed feature/risk/model architecture.
+
+
+## Recovery: Drive “Transport endpoint is not connected” during upload
+
+That means the Drive filesystem disconnected while the older notebook tried to write the ZIP into its Drive run directory. It does not indicate incorrect posture folders. The updated notebook keeps uploads and the entire active run local, and uses Drive only for an explicitly requested source read or final optional backup.
+
+In an already-open old notebook, replace section 3 with this cell, then select the same sorted ZIP again. You do not need to re-sort images, reinstall packages or recreate the ZIP.
+
+```python
+import os, sys, json, subprocess
+from pathlib import Path
+ROOT = Path('/content/SeniorDesignProject')
+os.chdir(ROOT)
+subprocess.run(['git', 'pull', '--ff-only'],
+               env=dict(os.environ, GIT_LFS_SKIP_SMUDGE='1'), check=True)
+from google.colab import files
+from cribwatch.colab_io import local_zip_run
+RUN, ZIP_PATH = local_zip_run()
+print('Verified local ZIP:', ZIP_PATH)
+print('Local run:', RUN)
+```
+
+Continue at section 4. The run now lives under /content/cribwatch-runs, so download the trained deployment ZIP in section 8 before disconnecting/resetting the runtime. Source photos remain on your computer. An old “Also in Drive” print label in a previously opened cell does not change the actual local path. The updated section 8 offers an optional explicit Drive backup after local processing; Drive success is never assumed from its earlier Mounted message.
