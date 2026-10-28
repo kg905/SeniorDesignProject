@@ -1,5 +1,7 @@
 # Label first, train one classifier, then demonstrate a live risk overlay
 
+**Manual folder alternative:** the user now prefers File Explorer sorting. Use [MANUAL_FOLDERS.md](MANUAL_FOLDERS.md) and [manual_folders_colab.ipynb](../notebooks/manual_folders_colab.ipynb) to upload one sorted ZIP directly. The review-interface instructions below remain optional; previous Drive reviews are preserved.
+
 **Agreed architecture: camera → MediaPipe pose/face → your 12 metrics → ONE posture classifier → posture-risk level → timed alarm.** We are keeping MediaPipe. MobileNet/image embeddings are not used by this selected path. The original ZIPs and 5,814 extracted images are already in this repository; no more ZIP uploads/splitting are needed.
 
 ## Step 1 — Open the label-and-train notebook

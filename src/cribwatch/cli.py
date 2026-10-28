@@ -30,6 +30,10 @@ def main(argv=None):
     p = commands.add_parser("audit-coco")
     p.add_argument("--dataset", action="append", required=True, help="NAME=/path/to/extracted/export (repeatable)")
     p.add_argument("--output", required=True)
+    p = commands.add_parser("import-folders")
+    p.add_argument("folder", help="Folder containing back/, side/, prone/ and optional unknown/")
+    p.add_argument("--output", required=True)
+    p.add_argument("--reference-index", help="Original audit CSV, used only to preserve source/duplicate grouping")
     p = commands.add_parser("suggest")
     p.add_argument("features")
     p.add_argument("--output", default="data/suggested.csv")
@@ -89,6 +93,9 @@ def main(argv=None):
     elif args.command == "extract":
         from .data import extract_manifest
         print(f"Extracted {extract_manifest(args.manifest, args.output, args.models, workers=args.workers)} images")
+    elif args.command == "import-folders":
+        from .folder_data import import_folders
+        print(json.dumps(import_folders(args.folder, args.output, reference_index=args.reference_index), indent=2))
     elif args.command == "audit-coco":
         from .coco import audit_coco
         roots = dict(value.split("=", 1) for value in args.dataset)
