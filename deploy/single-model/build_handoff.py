@@ -14,15 +14,26 @@ def build(model, output, root=None):
     report = json.loads((model / "test.json").read_text())
     if not report.get("n_images") or not report.get("model_sha256"):
         raise ValueError("Need a trained classifier and its checksum-bound evaluation report")
-    if hashlib.sha256((model / "posture.joblib").read_bytes()).hexdigest() != report["model_sha256"]:
+    fusion = (model / "fusion.json").exists()
+    weights = model / ("posture_fusion.pt" if fusion else "posture.joblib")
+    if hashlib.sha256(weights.read_bytes()).hexdigest() != report["model_sha256"]:
         raise ValueError("Evaluation/model checksum mismatch")
     files = {}
-    files["models/posture_model.joblib"] = model / "posture.joblib"
+    files["models/posture_fusion.pt" if fusion else "models/posture_model.joblib"] = weights
     files["models/test.json"] = model / "test.json"
-    files["models/training_feature_percentiles.json"] = model / "training_feature_percentiles.json"
+    if (model / "training_feature_percentiles.json").exists():
+        files["models/training_feature_percentiles.json"] = model / "training_feature_percentiles.json"
     from cribwatch.assets import classifier_assets
     import joblib
-    artifact = joblib.load(model / "posture.joblib")
+    artifact = json.loads((model / "fusion.json").read_text()) if fusion else joblib.load(weights)
+    if fusion:
+        if artifact.get("model_sha256") != report["model_sha256"]:
+            raise ValueError("Fusion configuration/model mismatch")
+        if hashlib.sha256((model / "fusion.json").read_bytes()).hexdigest() != report.get("config_sha256"):
+            raise ValueError("Fusion configuration/evaluation checksum mismatch")
+        files["models/fusion.json"] = model / "fusion.json"
+        files["FUSION.md"] = root / "docs/FUSION_GEOMETRY_V2.md"
+        files["requirements-hybrid.txt"] = root / "training/requirements-hybrid.txt"
     for name, expected in classifier_assets(artifact).items():
         path = root / "models" / name
         if hashlib.sha256(path.read_bytes()).hexdigest() != expected:
@@ -55,7 +66,10 @@ def build(model, output, root=None):
     # Include the shared predictor/feature code, not notebooks or raw images.
     runtime_modules = ("__init__.py", "camera.py", "alarm_runtime.py", "policy.py", "transport.py",
                        "tcp_alarm.py", "display.py", "showcase.py", "metrics_model.py",
-                       "learning.py", "features.py", "vision.py", "hybrid_vision.py", "data.py", "assets.py")
+                       "learning.py", "features.py", "vision.py", "hybrid_vision.py", "data.py", "assets.py",
+                       "geometry_display.py", "frame_roi.py", "capture.py", "annotate_torso.py", "torso_pose.py")
+    if fusion:
+        runtime_modules += ("fusion.py", "fusion_model.py")
     for name in runtime_modules:
         path = root / "src/cribwatch" / name
         files[f"src/cribwatch/{path.name}"] = path

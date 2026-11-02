@@ -40,7 +40,7 @@ def analyze_video(source, classifier, models, output, *, sample_fps=5, allow_exp
                     continue
                 next_time = now + 1 / sample_fps
                 rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
-                observation = vision.observe(rgb)
+                observation = predictor.prepare_observation(vision.observe(rgb))
                 posture, scores, reason = predictor.predict(observation, rgb=rgb)
                 result = {"video_seconds": now, **policy.update(posture, now), "reason": reason,
                           "model_scores": scores, "metrics": {k: v if math.isfinite(v) else None for k, v in observation.metrics.items()}}

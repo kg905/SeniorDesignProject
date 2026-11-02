@@ -1,0 +1,91 @@
+{
+  "architecture": "mobilenet_v3_small_metric_fusion_v1",
+  "features": [
+    "shoulder_vec_mag",
+    "hip_vec_mag",
+    "shoulder_angle_deg",
+    "hip_angle_deg",
+    "shoulder_hip_angle_diff",
+    "left_shoulder_visibility",
+    "right_shoulder_visibility",
+    "left_hip_visibility",
+    "right_hip_visibility",
+    "face_detected",
+    "face_landmark_count",
+    "head_lift_ratio"
+  ],
+  "schema_version": 3,
+  "preprocessing": "stretch_640x640_rgb_v1",
+  "image_size": 160,
+  "normalizer": {
+    "features": [
+      "shoulder_vec_mag",
+      "hip_vec_mag",
+      "shoulder_angle_deg",
+      "hip_angle_deg",
+      "shoulder_hip_angle_diff",
+      "left_shoulder_visibility",
+      "right_shoulder_visibility",
+      "left_hip_visibility",
+      "right_hip_visibility",
+      "face_detected",
+      "face_landmark_count",
+      "head_lift_ratio"
+    ],
+    "center": [
+      0.5508752546310909,
+      0.3254067231280021,
+      85.22615151438461,
+      85.35660417626691,
+      7.024059544203283,
+      0.9985590577125549,
+      0.998490959405899,
+      0.9967711269855499,
+      0.9962063431739807,
+      0.0,
+      0.0,
+      0.2897280377614986
+    ],
+    "scale": [
+      0.2996624409714733,
+      0.17735216077214602,
+      83.6110741490512,
+      79.7868187860733,
+      21.173226604495806,
+      0.17834314175633909,
+      0.16608861437804004,
+      0.24042352180793763,
+      0.2374477324159523,
+      0.38058716547567606,
+      181.92066509737316,
+      0.12410165056274677
+    ],
+    "fitted_on": "training_only",
+    "input_size": 25
+  },
+  "vision_assets": {
+    "pose_landmarker_lite.task": "59929e1d1ee95287735ddd833b19cf4ac46d29bc7afddbbf6753c459690d574a",
+    "face_landmarker.task": "64184e229b263107bc2b804c6625db1341ff2bb731874b0bcc2fe6544e0bc9ff"
+  },
+  "vision_adapter": {
+    "confidence": 0.25,
+    "kind": "yolo_mediapipe_keypoints_v1",
+    "padding": 0.2,
+    "yolo_name": "yolov8n-pose.pt",
+    "yolo_sha256": "c6fa93dd1ee4a2c18c900a45c1d864a1c6f7aba75d84f91648a30b7fb641d212"
+  },
+  "temperature": 2.0,
+  "score_threshold": 0.5,
+  "features_sha256": "217361f4c4a35eaf9050996dd674bd4832f45d98c037538c3d498f9112a12655",
+  "exploratory": true,
+  "best_epoch": 6,
+  "initialized_from": "official ImageNet MobileNetV3 Small",
+  "model_sha256": "0a89e82882fad8c92e6f133f1b3354b38992dee5847fd4873298d71d40d86070",
+  "training_options": {
+    "epochs": 10,
+    "warmup": 2,
+    "batch_size": 32,
+    "seed": 42,
+    "pretrained": true
+  }
+}

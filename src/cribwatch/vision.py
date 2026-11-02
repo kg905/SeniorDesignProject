@@ -86,12 +86,22 @@ class Vision:
             landmarks = [copy.copy(point) for point in landmarks]
             for point in landmarks:
                 point.x, point.y = x1 + point.x * (x2 - x1), y1 + point.y * (y2 - y1)
-        return extract_metrics(
+        observation = extract_metrics(
             landmarks, 640, 640,
             world=pose.pose_world_landmarks[0] if pose.pose_world_landmarks else None,
             face_count=len(face.face_landmarks),
             face_landmark_count=len(face.face_landmarks[0]) if face.face_landmarks else 0,
         )
+        if observation.geometry is not None and len(face.face_landmarks) == 1:
+            from dataclasses import replace
+            xy = np.array([[p.x, p.y] for p in face.face_landmarks[0]])
+            if len(xy) and np.isfinite(xy).all():
+                if region is not None:
+                    x1, y1, x2, y2 = region
+                    xy = xy * [x2-x1, y2-y1] + [x1, y1]
+                box = np.clip(np.concatenate([xy.min(axis=0), xy.max(axis=0)]), 0, 1).tolist()
+                observation = replace(observation, geometry=dict(observation.geometry, face_box=box))
+        return observation
 
     def close(self):
         for task in (self.pose, self.face):

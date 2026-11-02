@@ -15,7 +15,7 @@ from sklearn.pipeline import make_pipeline
 from threadpoolctl import threadpool_limits
 
 from .data import read_csv, write_csv
-from .features import FEATURES, LABELS, SCHEMA_VERSION, VISION_PREPROCESSING, feature_vector
+from .features import FEATURES, LABELS, SCHEMA_VERSION, VISION_PREPROCESSING, feature_vector, observation_for_schema
 
 
 def wilson(successes, total):
@@ -170,6 +170,13 @@ def _adapter_metadata(rows):
     return validate_adapter(json.loads(next(iter(values))))
 
 
+def feature_schema_for(rows):
+    values = {int(r.get("feature_schema") or SCHEMA_VERSION) for r in rows}
+    if len(values) != 1 or not values <= {2, 3}:
+        raise ValueError("Mixed or unknown feature schemas; preserve separate experiments")
+    return values.pop()
+
+
 def train(features_csv, output_dir, seed=42, *, exploratory=False, min_validation_coverage=0.5,
           search=False, validation_only=False):
     out = Path(output_dir)
@@ -240,7 +247,7 @@ def train(features_csv, output_dir, seed=42, *, exploratory=False, min_validatio
         if best is None or key > best[0]:
             best = key, name, candidate, candidate_threshold, constraint_met
     _, selected_name, model, threshold, constraint_met = best
-    artifact = {"schema_version": SCHEMA_VERSION, "features": list(FEATURES), "labels": list(LABELS),
+    artifact = {"schema_version": feature_schema_for(rows), "features": list(FEATURES), "labels": list(LABELS),
                 "pipeline": model, "threshold": threshold, "research_only": True,
                 "exploratory": exploratory, "evaluation_grouping": group_field,
                 "preprocessing": VISION_PREPROCESSING,
@@ -307,7 +314,7 @@ class Predictor:
     def __init__(self, path, *, allow_exploratory=False, models_dir="models"):
         # Joblib can execute Python: load only a model YOU trained or otherwise trust.
         self.artifact = joblib.load(path)
-        if self.artifact.get("schema_version") != SCHEMA_VERSION or self.artifact.get("features") != list(FEATURES):
+        if self.artifact.get("schema_version") not in {2, 3} or self.artifact.get("features") != list(FEATURES):
             raise ValueError("Incompatible feature schema")
         if self.artifact.get("preprocessing") != VISION_PREPROCESSING:
             raise ValueError("Incompatible image preprocessing")
@@ -319,6 +326,7 @@ class Predictor:
         self.embedding_extractor = None
 
     def predict(self, observation, *, rgb=None):
+        observation = self.prepare_observation(observation)
         if self.artifact.get("input_kind") == "image_metrics":
             from .image_model import EmbeddingExtractor, combined_vector
             if rgb is None:
@@ -340,6 +348,9 @@ class Predictor:
         scores = dict(zip(self.pipeline.classes_.tolist(), p.tolist()))
         posture = str(self.pipeline.classes_[int(p.argmax())]) if max(p) >= self.threshold else "unknown"
         return posture, scores, "ok" if posture != "unknown" else "low_model_score"
+
+    def prepare_observation(self, observation):
+        return observation_for_schema(observation, self.artifact["schema_version"])
 
     def close(self):
         if self.embedding_extractor is not None:

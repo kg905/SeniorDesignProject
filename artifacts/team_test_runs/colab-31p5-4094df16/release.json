@@ -5,5 +5,10 @@
   "classifier_sha256": "4094df169c6275f5857ba94f8b136a32730221bbf309b2dda39148cb365500d5",
   "test_images": 267,
   "test_accuracy": 0.3146067415730337,
-  "provenance": "Exact user-uploaded Colab deployment ZIP; archive bytes preserved; every declared SHA256 and classifier/report binding verified. No weights executed during intake."
+  "provenance": "Exact user-uploaded Colab deployment ZIP; archive bytes preserved; every declared SHA256 and classifier/report binding verified. No weights executed during intake.",
+  "geometry_companion": {
+    "archive": "SIDS_Pi5_Team_Geometry_Overlay.zip",
+    "sha256": "95b9ce4432c83543c7276fa3f78a55e28e0e271dea82937cb5f86b953f54a5b7",
+    "classifier_unchanged": true
+  }
 }

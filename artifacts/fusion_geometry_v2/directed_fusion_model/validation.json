@@ -1,0 +1,89 @@
+{
+  "n_images": 888,
+  "n_babies": null,
+  "grouping_field": "source_group",
+  "n_evaluation_groups": 341,
+  "accuracy_all_images_unknown_counts_as_error": 0.5,
+  "accuracy_95ci_group_cluster_bootstrap": [
+    0.45276416657306523,
+    0.5468754413841808
+  ],
+  "coverage": 0.6790540540540541,
+  "accuracy_on_accepted_only": 0.736318407960199,
+  "unsafe_predicted_back_count": 31,
+  "unsafe_total": 629,
+  "class_order": [
+    "back",
+    "side",
+    "prone",
+    "unknown"
+  ],
+  "confusion_matrix": [
+    [
+      135,
+      20,
+      27,
+      77
+    ],
+    [
+      19,
+      142,
+      36,
+      91
+    ],
+    [
+      12,
+      45,
+      167,
+      117
+    ],
+    [
+      0,
+      0,
+      0,
+      0
+    ]
+  ],
+  "per_class": {
+    "back": {
+      "correct": 135,
+      "total": 259,
+      "recall": 0.5212355212355212,
+      "frame_binomial_95ci_descriptive_only": [
+        0.46053240487186575,
+        0.581317918320504
+      ]
+    },
+    "side": {
+      "correct": 142,
+      "total": 288,
+      "recall": 0.4930555555555556,
+      "frame_binomial_95ci_descriptive_only": [
+        0.4357877408981614,
+        0.5505061872635066
+      ]
+    },
+    "prone": {
+      "correct": 167,
+      "total": 341,
+      "recall": 0.4897360703812317,
+      "frame_binomial_95ci_descriptive_only": [
+        0.4370888207663962,
+        0.5426119958815239
+      ]
+    }
+  },
+  "limitations": "Research posture labels only, not SIDS/airway outcomes. Intervals are uncertain with few babies. No event latency or false-alarm/hour claim from still images. No infant/session IDs: source-image groups cannot demonstrate accuracy on unseen babies.",
+  "posture_95pct_point_estimates_met": false,
+  "research_95pct_point_target_met": false,
+  "model_sha256": "0a89e82882fad8c92e6f133f1b3354b38992dee5847fd4873298d71d40d86070",
+  "features_sha256": "217361f4c4a35eaf9050996dd674bd4832f45d98c037538c3d498f9112a12655",
+  "architecture": "mobilenet_v3_small_metric_fusion_v1",
+  "temperature": 2.0,
+  "score_threshold": 0.5,
+  "validation_coverage_constraint_met": false,
+  "exploratory": true,
+  "best_epoch": 6,
+  "metric_input_count": 12,
+  "config_sha256": "bd544a65942097f6306ec3812adad27a93a2a4158c502fa744c34f6d8cbf7b36"
+}

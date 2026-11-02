@@ -1,0 +1,98 @@
+{
+  "n_images": 888,
+  "n_babies": null,
+  "grouping_field": "source_group",
+  "n_evaluation_groups": 341,
+  "accuracy_all_images_unknown_counts_as_error": 0.34572072072072074,
+  "accuracy_95ci_group_cluster_bootstrap": [
+    0.30169444181422217,
+    0.3893136405048959
+  ],
+  "coverage": 0.5123873873873874,
+  "accuracy_on_accepted_only": 0.6747252747252748,
+  "unsafe_predicted_back_count": 48,
+  "unsafe_total": 629,
+  "class_order": [
+    "back",
+    "side",
+    "prone",
+    "unknown"
+  ],
+  "confusion_matrix": [
+    [
+      111,
+      17,
+      11,
+      120
+    ],
+    [
+      34,
+      89,
+      34,
+      131
+    ],
+    [
+      14,
+      38,
+      107,
+      182
+    ],
+    [
+      0,
+      0,
+      0,
+      0
+    ]
+  ],
+  "per_class": {
+    "back": {
+      "correct": 111,
+      "total": 259,
+      "recall": 0.42857142857142855,
+      "frame_binomial_95ci_descriptive_only": [
+        0.3697797384569925,
+        0.48945099262321823
+      ]
+    },
+    "side": {
+      "correct": 89,
+      "total": 288,
+      "recall": 0.3090277777777778,
+      "frame_binomial_95ci_descriptive_only": [
+        0.25846635496628,
+        0.36461666947959404
+      ]
+    },
+    "prone": {
+      "correct": 107,
+      "total": 341,
+      "recall": 0.31378299120234604,
+      "frame_binomial_95ci_descriptive_only": [
+        0.2668374419322502,
+        0.3648773743942992
+      ]
+    }
+  },
+  "limitations": "Research posture labels only, not SIDS/airway outcomes. Intervals are uncertain with few babies. No event latency or false-alarm/hour claim from still images. No infant/session IDs: source-image groups cannot demonstrate accuracy on unseen babies.",
+  "posture_95pct_point_estimates_met": false,
+  "research_95pct_point_target_met": false,
+  "exploratory": true,
+  "score_threshold": 0.5,
+  "requested_min_validation_coverage": 0.5,
+  "validation_coverage_constraint_met": true,
+  "pose_gate_coverage_ceiling": 0.7195945945945946,
+  "selected_classifier": "random_forest_leaf3",
+  "vision_assets": {
+    "pose_landmarker_lite.task": "59929e1d1ee95287735ddd833b19cf4ac46d29bc7afddbbf6753c459690d574a",
+    "face_landmarker.task": "64184e229b263107bc2b804c6625db1341ff2bb731874b0bcc2fe6544e0bc9ff"
+  },
+  "vision_adapter": {
+    "confidence": 0.25,
+    "kind": "yolo_mediapipe_keypoints_v1",
+    "padding": 0.2,
+    "yolo_name": "yolov8n-pose.pt",
+    "yolo_sha256": "c6fa93dd1ee4a2c18c900a45c1d864a1c6f7aba75d84f91648a30b7fb641d212"
+  },
+  "features_sha256": "217361f4c4a35eaf9050996dd674bd4832f45d98c037538c3d498f9112a12655",
+  "model_sha256": "80f5d87ee47a88c2b54079a590e88cf6900bd1b4769712c5c5a74483c8868d9e"
+}

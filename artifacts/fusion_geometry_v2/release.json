@@ -1,0 +1,8 @@
+{
+  "archive": "SIDS_Pi5_Fusion_Geometry.zip",
+  "archive_sha256": "e4e75a0631043e4bc9004f3f9f71ec4715ee3820235f0b4fb78cf5fee7cd8bce",
+  "model_sha256": "0a89e82882fad8c92e6f133f1b3354b38992dee5847fd4873298d71d40d86070",
+  "accuracy": 0.5011337868480725,
+  "feature_schema": 3,
+  "physical_pi_tested": false
+}

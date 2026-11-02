@@ -83,6 +83,7 @@ def import_folders(root, output, *, reference_index=None, near_distance=4):
             rows.append(dict(image_path=str(path.resolve()), relative_path=relative, sha256=digest,
                 pixel_sha256=pixel_digest, source_name=path.name, posture=posture, face_state="unknown",
                 baby_id=(identity.get("baby_id") or "").strip(), session_id=(identity.get("session_id") or "").strip(),
+                subject_id=(identity.get("subject_id") or "").strip(), subject_kind=(identity.get("subject_kind") or "").strip(),
                 reviewed="1", human_verified="1", label_source="human_review", label_method="manual_class_folder",
                 folder_label=folder.name, dataset="manual_folders", source_group="", original_image_group="",
                 label_conflict="0", training_eligible="0", matched_original=str(int(bool(matches)))))

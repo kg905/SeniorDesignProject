@@ -44,3 +44,7 @@ Use fresh output filenames per run. For a physical alarm, follow bundled PROTOCO
 5. Record the **actual** doll posture, camera placement, lighting, and whether people/hands entered the view for each trial. Keep video/JSONL together. Confidence and valid-detection rate are not posture accuracy; compare predictions against the actual labels. Capture the camera frame itself rather than only a terminal photograph, especially for failed prone examples.
 
 The screenshots' custom “FINAL TEST SUMMARY” script is not part of this uploaded ZIP. Keep a copy of that script with any results if it is used; do not assume it shares the bundled monitor's fault logic. This package predates the new detailed geometry overlay.
+
+## Optional geometry display update, same trained model
+
+[SIDS_Pi5_Team_Geometry_Overlay.zip](SIDS_Pi5_Team_Geometry_Overlay.zip) is a separate companion with the new measured-joint/vector display and camera capture utilities. It retains the **same classifier checksum and 31.5% measured score**. Drawing more information does not improve its classifier accuracy. The exact original ZIP above remains byte-for-byte unchanged. Unpack the companion into its own folder and use its bundled source; use fresh log/recording filenames. The separately trained [50.1% experimental model](../../fusion_geometry_v2/README.md) is a different artifact evaluated on a different cohort.

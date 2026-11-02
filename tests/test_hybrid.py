@@ -102,6 +102,40 @@ def test_keypoint_alternative_uses_dense_face_count_and_never_invents_head_depth
     assert vision.last_route == "yolo_keypoints"
 
 
+def test_declared_torso_four_layout_maps_only_verified_torso_joints():
+    vision, _, _ = make_hybrid(unknown("no_pose"), [])
+    vision.adapter = adapter() | {"kind": "yolo_mediapipe_keypoints_v1", "keypoint_layout": "torso4"}
+    vision.mediapipe.observe_region = lambda rgb, region: unknown("no_pose")
+    vision.mediapipe.face_summary = lambda rgb: (0, 0)
+    def tensor(value):return P(cpu=lambda:P(numpy=lambda:value))
+    xy=np.array([[[192.,192.],[448.,192.],[224.,448.],[416.,448.]]])
+    result=P(boxes=P(xyxy=tensor(np.array([[150.,70.,500.,550.]]))),
+             keypoints=P(xy=tensor(xy),conf=tensor(np.full((1,4),.9))))
+    vision.yolo.predict=lambda **kwargs:[result]
+    observation=vision.observe(np.zeros((640,640,3),np.uint8))
+    assert observation.pose_ok
+    assert observation.metrics['shoulder_vec_mag']==pytest.approx(1.)
+    assert not observation.geometry['points']['nose']['usable']
+    assert math.isnan(observation.metrics['head_lift_ratio'])
+
+
+def test_trained_yolo_can_correct_even_a_confident_mediapipe_pose():
+    mp_result=Observation(dict.fromkeys(FEATURES,.5),True,'ok')
+    vision,_,_=make_hybrid(mp_result,[])
+    vision.adapter=adapter() | {'kind':'yolo_mediapipe_keypoints_v1','keypoint_layout':'torso4','strategy':'yolo_primary'}
+    vision.mediapipe.face_summary=lambda rgb:(0,0)
+    def tensor(value):return P(cpu=lambda:P(numpy=lambda:value))
+    result=P(boxes=P(xyxy=tensor(np.array([[150.,70.,500.,550.]]))),
+             keypoints=P(xy=tensor(np.array([[[192.,192.],[448.,192.],[224.,448.],[416.,448.]]])),conf=tensor(np.full((1,4),.9))))
+    seen=[]
+    def predict(**kwargs):seen.append(True);return [result]
+    vision.yolo.predict=predict
+    observation=vision.observe(np.zeros((640,640,3),np.uint8))
+    assert seen and observation.pose_ok
+    assert observation.metrics['shoulder_vec_mag']==pytest.approx(1.)
+    assert observation.geometry['source']=='yolov8_keypoints'
+
+
 def test_hybrid_export_preserves_one_classifier_and_exact_adapter(tmp_path, monkeypatch):
     import hashlib
     import importlib.util

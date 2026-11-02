@@ -1,0 +1,22 @@
+[
+  {
+    "image": "istockphoto-1201146744-612x612_jpg.rf.092aa10733d75f2960df7f8621e63edc.jpg",
+    "true_posture": "back",
+    "selection": "First usable-pose example of each posture plus first detection failure; not an accuracy sample"
+  },
+  {
+    "image": "65_jpg.rf.64c1f2c21a419838e088ed5993b630c4.jpg",
+    "true_posture": "prone",
+    "selection": "First usable-pose example of each posture plus first detection failure; not an accuracy sample"
+  },
+  {
+    "image": "Prone_52_jpg.rf.587314694e2b0a3be7794a3723ad69ea.jpg",
+    "true_posture": "side",
+    "selection": "First usable-pose example of each posture plus first detection failure; not an accuracy sample"
+  },
+  {
+    "image": "00293_jpg.rf.0396613214b079097a52e22aed72a54a.jpg",
+    "true_posture": "side",
+    "selection": "First usable-pose example of each posture plus first detection failure; not an accuracy sample"
+  }
+]

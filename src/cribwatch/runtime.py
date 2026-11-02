@@ -57,7 +57,7 @@ def monitor(args):
                 posture, reason = "unknown", observation.reason
                 if frame and frame[0] != seen and start - frame[1] <= 1.0:
                     seen = frame[0]
-                    observation = vision.observe(frame[2])
+                    observation = predictor.prepare_observation(vision.observe(frame[2]))
                     posture, scores, reason = predictor.predict(observation, rgb=frame[2])
                     if time.monotonic() - frame[1] > policy.config.max_gap_seconds:
                         posture, reason = "unknown", "inference_too_slow"

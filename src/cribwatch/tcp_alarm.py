@@ -59,7 +59,9 @@ class TCPAlarmClient:
 
     def send(self, status):
         nonce = self.exchange({"op": "challenge"})["nonce"]
-        payload = dict(status, nonce=nonce)
+        # Geometry belongs to the local display/log, not the bounded alarm packet.
+        payload = {k: v for k, v in status.items() if k not in {"geometry", "metrics"}}
+        payload["nonce"] = nonce
         signature = hmac.new(self.key, canonical(payload), hashlib.sha256).hexdigest()
         if not self.exchange({"op": "status", "payload": payload, "signature": signature}).get("accepted"):
             raise ConnectionError("Alarm receiver rejected status")

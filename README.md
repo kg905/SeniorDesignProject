@@ -1,5 +1,7 @@
 # CribWatch research prototype
 
+**New model + measured geometry:** [Colab](https://colab.research.google.com/github/kg905/SeniorDesignProject/blob/main/notebooks/fusion_geometry_colab.ipynb), [workflow/Pi capture guide](docs/FUSION_GEOMETRY_V2.md), and [trained models/results](artifacts/fusion_geometry_v2/README.md). The new image + 12-metric model reports 50.1% accuracy and 50.4% prone recall on the same 882-image cohort where the earlier hybrid scored 29.1%. It draws actual joints, vectors, angles and all 12 measurements. This is still below 95%; verified keypoints and actual overhead doll recordings are the next data requirement. The uploaded 31.5% team model remains separately preserved below.
+
 **Current group test download:** [user's Colab-trained hybrid package (31.5% test accuracy)](artifacts/team_test_runs/colab-31p5-4094df16/README.md). The exact uploaded ZIP, checksums, report and Pi run instructions are preserved separately from new-model development. See [team test versions](docs/TEAM_TEST_RUNS.md).
 
 **YOLO + MediaPipe alternative:** [instructions and metric definitions](docs/HYBRID_ALTERNATIVE.md), [separate Colab](https://colab.research.google.com/github/kg905/SeniorDesignProject/blob/main/notebooks/hybrid_mediapipe_yolo_colab.ipynb). It preserves existing artifacts, compares a matching baseline with YOLO-assisted extraction, and retrains one separate posture classifier. YOLO fallback confidence and missing head depth are explicitly documented; no improved accuracy is assumed.

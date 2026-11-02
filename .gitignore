@@ -23,6 +23,8 @@ __pycache__/
 /artifacts/dataset_audit_v2/*.checkpoint.jsonl
 /artifacts/dataset_audit_v2/extractor_*
 /artifacts/hybrid_alternative_v1/*.checkpoint.jsonl
+/artifacts/fusion_geometry_v2/*.checkpoint.jsonl
+/artifacts/fusion_geometry_v2/**/best-training-state.pt
 
 # New per-run training exports, snapshots, and private recordings stay local.
 /runs/

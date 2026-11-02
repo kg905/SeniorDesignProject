@@ -1,0 +1,299 @@
+{
+  "note": "Descriptive training-only metric distributions; not safe ranges or calibrated physical roll.",
+  "classes": {
+    "back": {
+      "shoulder_vec_mag": {
+        "available_fraction": 0.7564402810304449,
+        "percentiles_5_50_95": [
+          0.22542265407011633,
+          0.690512607016128,
+          1.0101348868996867
+        ]
+      },
+      "hip_vec_mag": {
+        "available_fraction": 0.7564402810304449,
+        "percentiles_5_50_95": [
+          0.14603179354910842,
+          0.41200280387354443,
+          0.6036168338376742
+        ]
+      },
+      "shoulder_angle_deg": {
+        "available_fraction": 0.7564402810304449,
+        "percentiles_5_50_95": [
+          1.5955386764668282,
+          90.12097054058137,
+          107.79857232388807
+        ]
+      },
+      "hip_angle_deg": {
+        "available_fraction": 0.7564402810304449,
+        "percentiles_5_50_95": [
+          26.055405272758403,
+          89.63918868104284,
+          103.34095001736969
+        ]
+      },
+      "shoulder_hip_angle_diff": {
+        "available_fraction": 0.7564402810304449,
+        "percentiles_5_50_95": [
+          0.6919130982923178,
+          5.825073347741295,
+          21.64732416793438
+        ]
+      },
+      "left_shoulder_visibility": {
+        "available_fraction": 0.8559718969555035,
+        "percentiles_5_50_95": [
+          0.5502283871173859,
+          0.9990665316581726,
+          0.9999604821205139
+        ]
+      },
+      "right_shoulder_visibility": {
+        "available_fraction": 0.8559718969555035,
+        "percentiles_5_50_95": [
+          0.6438092589378357,
+          0.9990071654319763,
+          0.9999711513519287
+        ]
+      },
+      "left_hip_visibility": {
+        "available_fraction": 0.8559718969555035,
+        "percentiles_5_50_95": [
+          0.18057812750339508,
+          0.9985847473144531,
+          0.999964714050293
+        ]
+      },
+      "right_hip_visibility": {
+        "available_fraction": 0.8559718969555035,
+        "percentiles_5_50_95": [
+          0.2499031350016594,
+          0.9981892704963684,
+          0.9999545216560364
+        ]
+      },
+      "face_detected": {
+        "available_fraction": 0.8559718969555035,
+        "percentiles_5_50_95": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "face_landmark_count": {
+        "available_fraction": 0.8559718969555035,
+        "percentiles_5_50_95": [
+          0.0,
+          0.0,
+          478.0
+        ]
+      },
+      "head_lift_ratio": {
+        "available_fraction": 0.24004683840749413,
+        "percentiles_5_50_95": [
+          0.18715844122618794,
+          0.33728916818020843,
+          0.46326558424723135
+        ]
+      }
+    },
+    "side": {
+      "shoulder_vec_mag": {
+        "available_fraction": 0.7120535714285714,
+        "percentiles_5_50_95": [
+          0.05771096880574962,
+          0.37372123632007015,
+          0.9459081797353935
+        ]
+      },
+      "hip_vec_mag": {
+        "available_fraction": 0.7120535714285714,
+        "percentiles_5_50_95": [
+          0.05005844758019967,
+          0.2528125261294461,
+          0.5731694888953841
+        ]
+      },
+      "shoulder_angle_deg": {
+        "available_fraction": 0.7120535714285714,
+        "percentiles_5_50_95": [
+          -127.31447588155943,
+          83.77556346407572,
+          132.1875678935818
+        ]
+      },
+      "hip_angle_deg": {
+        "available_fraction": 0.7120535714285714,
+        "percentiles_5_50_95": [
+          -114.53134090054988,
+          83.00961210449418,
+          133.78474387375948
+        ]
+      },
+      "shoulder_hip_angle_diff": {
+        "available_fraction": 0.7120535714285714,
+        "percentiles_5_50_95": [
+          0.9339613183276256,
+          9.664357595084908,
+          71.79666506603931
+        ]
+      },
+      "left_shoulder_visibility": {
+        "available_fraction": 0.8002232142857143,
+        "percentiles_5_50_95": [
+          0.5440619945526123,
+          0.9983267188072205,
+          0.9999458312988281
+        ]
+      },
+      "right_shoulder_visibility": {
+        "available_fraction": 0.8002232142857143,
+        "percentiles_5_50_95": [
+          0.5118133902549744,
+          0.9983832836151123,
+          0.9999594211578369
+        ]
+      },
+      "left_hip_visibility": {
+        "available_fraction": 0.8002232142857143,
+        "percentiles_5_50_95": [
+          0.3373822569847107,
+          0.9968295693397522,
+          0.9999387502670288
+        ]
+      },
+      "right_hip_visibility": {
+        "available_fraction": 0.8002232142857143,
+        "percentiles_5_50_95": [
+          0.32394002079963696,
+          0.9962140917778015,
+          0.9999338626861572
+        ]
+      },
+      "face_detected": {
+        "available_fraction": 0.8002232142857143,
+        "percentiles_5_50_95": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "face_landmark_count": {
+        "available_fraction": 0.8002232142857143,
+        "percentiles_5_50_95": [
+          0.0,
+          0.0,
+          478.0
+        ]
+      },
+      "head_lift_ratio": {
+        "available_fraction": 0.0703125,
+        "percentiles_5_50_95": [
+          0.02730544631679291,
+          0.2051950480752568,
+          0.3852445818687239
+        ]
+      }
+    },
+    "prone": {
+      "shoulder_vec_mag": {
+        "available_fraction": 0.6731875719217492,
+        "percentiles_5_50_95": [
+          0.10071725489132605,
+          0.47659234908876313,
+          0.9815967527869247
+        ]
+      },
+      "hip_vec_mag": {
+        "available_fraction": 0.6731875719217492,
+        "percentiles_5_50_95": [
+          0.057418056301240084,
+          0.267349139953025,
+          0.5832568789905039
+        ]
+      },
+      "shoulder_angle_deg": {
+        "available_fraction": 0.6731875719217492,
+        "percentiles_5_50_95": [
+          -122.64297435705483,
+          -32.05972058045824,
+          129.88047671910027
+        ]
+      },
+      "hip_angle_deg": {
+        "available_fraction": 0.6731875719217492,
+        "percentiles_5_50_95": [
+          -126.11179338998711,
+          -18.403790054726702,
+          130.61639803483976
+        ]
+      },
+      "shoulder_hip_angle_diff": {
+        "available_fraction": 0.6731875719217492,
+        "percentiles_5_50_95": [
+          0.5038273671782293,
+          6.316055941692298,
+          32.43575713933534
+        ]
+      },
+      "left_shoulder_visibility": {
+        "available_fraction": 0.7894131185270425,
+        "percentiles_5_50_95": [
+          0.41132842004299164,
+          0.9982356131076813,
+          0.9999373555183411
+        ]
+      },
+      "right_shoulder_visibility": {
+        "available_fraction": 0.7894131185270425,
+        "percentiles_5_50_95": [
+          0.5525813400745392,
+          0.9979763925075531,
+          0.999940037727356
+        ]
+      },
+      "left_hip_visibility": {
+        "available_fraction": 0.7894131185270425,
+        "percentiles_5_50_95": [
+          0.15194206684827805,
+          0.9927283823490143,
+          0.9999052286148071
+        ]
+      },
+      "right_hip_visibility": {
+        "available_fraction": 0.7894131185270425,
+        "percentiles_5_50_95": [
+          0.14402316510677338,
+          0.9922898709774017,
+          0.9998792707920074
+        ]
+      },
+      "face_detected": {
+        "available_fraction": 0.7894131185270425,
+        "percentiles_5_50_95": [
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "face_landmark_count": {
+        "available_fraction": 0.7894131185270425,
+        "percentiles_5_50_95": [
+          0.0,
+          0.0,
+          478.0
+        ]
+      },
+      "head_lift_ratio": {
+        "available_fraction": 0.06789413118527042,
+        "percentiles_5_50_95": [
+          -0.0528509686737368,
+          0.1883552939066031,
+          0.3333892054628804
+        ]
+      }
+    }
+  }
+}

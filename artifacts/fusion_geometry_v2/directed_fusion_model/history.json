@@ -1,0 +1,72 @@
+[
+  {
+    "epoch": 1,
+    "train_loss": 0.9862845468876967,
+    "validation_loss": 0.8906482458114624,
+    "validation_minimum_recall": 0.40175953079178883,
+    "validation_macro_recall": 0.4905443252217445
+  },
+  {
+    "epoch": 2,
+    "train_loss": 0.800144256050907,
+    "validation_loss": 0.8576457500457764,
+    "validation_minimum_recall": 0.46920821114369504,
+    "validation_macro_recall": 0.5086478392930006
+  },
+  {
+    "epoch": 3,
+    "train_loss": 0.706924327273867,
+    "validation_loss": 0.8132296800613403,
+    "validation_minimum_recall": 0.4583333333333333,
+    "validation_macro_recall": 0.5305938007550911
+  },
+  {
+    "epoch": 4,
+    "train_loss": 0.579822628355738,
+    "validation_loss": 0.7985997200012207,
+    "validation_minimum_recall": 0.533724340175953,
+    "validation_macro_recall": 0.5479031083869793
+  },
+  {
+    "epoch": 5,
+    "train_loss": 0.5256133822362814,
+    "validation_loss": 0.855116069316864,
+    "validation_minimum_recall": 0.4809384164222874,
+    "validation_macro_recall": 0.5432895322008225
+  },
+  {
+    "epoch": 6,
+    "train_loss": 0.4096680441454275,
+    "validation_loss": 0.900844931602478,
+    "validation_minimum_recall": 0.5425219941348973,
+    "validation_macro_recall": 0.5629370468080146
+  },
+  {
+    "epoch": 7,
+    "train_loss": 0.32712575126050125,
+    "validation_loss": 0.995734453201294,
+    "validation_minimum_recall": 0.4930555555555556,
+    "validation_macro_recall": 0.5626466695015082
+  },
+  {
+    "epoch": 8,
+    "train_loss": 0.2834007359707533,
+    "validation_loss": 1.1106204986572266,
+    "validation_minimum_recall": 0.44574780058651026,
+    "validation_macro_recall": 0.5528082544211577
+  },
+  {
+    "epoch": 9,
+    "train_loss": 0.2368091001217045,
+    "validation_loss": 1.17449951171875,
+    "validation_minimum_recall": 0.49560117302052786,
+    "validation_macro_recall": 0.5558052816117333
+  },
+  {
+    "epoch": 10,
+    "train_loss": 0.21877474360056778,
+    "validation_loss": 1.3358250856399536,
+    "validation_minimum_recall": 0.4398826979472141,
+    "validation_macro_recall": 0.5485652179200566
+  }
+]

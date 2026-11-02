@@ -16,10 +16,19 @@ from .metrics_model import MetricsPredictor
 from .tcp_alarm import TCPAlarmClient
 
 
+def load_scan_predictor(model, models, showcase):
+    path = Path(model)
+    if (path.is_dir() and (path / "fusion.json").exists()) or path.name == "posture_fusion.pt":
+        from .fusion import FusionPredictor
+        return FusionPredictor(model, models_dir=models, showcase=showcase)
+    return MetricsPredictor(model, models_dir=models, showcase=showcase)
+
+
 class InferenceWorker:
     """A hung inference cannot freeze the GUI/watchdog or sustain a reassuring result."""
-    def __init__(self, camera, predictor):
+    def __init__(self, camera, predictor, *, roi=None):
         self.camera, self.predictor = camera, predictor
+        self.roi = roi
         self.lock, self.stop = threading.Lock(), threading.Event()
         self.result = None
         self.worker = threading.Thread(target=self.run, daemon=True)
@@ -34,12 +43,18 @@ class InferenceWorker:
                 continue
             seen = frame[0]
             start = time.monotonic()
+            from .frame_roi import crop_frame
+            rgb = frame[2]
+            geometry = None
             try:
-                prediction = self.predictor.predict(frame[2])
-            except Exception:
-                prediction = ("unknown", 0., {}, "inference_error", {}, None)
+                rgb = crop_frame(rgb, self.roi)
+                prediction = self.predictor.predict(rgb)
+                geometry = getattr(self.predictor, "last_geometry", None)
+            except Exception as error:
+                prediction = ("unknown", 0., {}, "inference_error:" + type(error).__name__, {}, None)
             with self.lock:
-                self.result = (frame[0], frame[1], frame[2], prediction, (time.monotonic() - start) * 1000)
+                self.result = (frame[0], frame[1], rgb, prediction, (time.monotonic() - start) * 1000,
+                               geometry)
 
     def get(self):
         with self.lock:
@@ -54,7 +69,7 @@ class InferenceWorker:
 
 def live(args):
     import cv2
-    predictor = MetricsPredictor(args.model, models_dir=args.models, showcase=args.showcase)
+    predictor = load_scan_predictor(args.model, args.models, args.showcase)
     client = TCPAlarmClient(args.alarm_host, get_key(), port=args.alarm_port) if args.alarm_host else None
     policy = AlarmPolicy(PolicyConfig(alarm_risk=args.alarm_risk))
     lock, stop = threading.Lock(), threading.Event()
@@ -90,7 +105,7 @@ def live(args):
             Path(args.log).parent.mkdir(parents=True, exist_ok=True)
             log = open(args.log, "x")
         camera = LatestCamera(args.source, picamera=args.picamera)
-        inference = InferenceWorker(camera, predictor)
+        inference = InferenceWorker(camera, predictor, roi=getattr(args, "roi", None))
         start_run = time.monotonic()
         seen_result = -1
         status = policy.update("unknown", start_run)
@@ -99,10 +114,11 @@ def live(args):
             result = inference.get()
             posture, confidence, scores, reason, elapsed = "unknown", 0., {}, "camera_or_inference_stale", None
             metrics, box = {}, None
+            geometry = None
             rgb = np.zeros((480, 640, 3), dtype=np.uint8)
             # Use the exact frame classified, never attach an old prediction to a new image.
             if result and start - result[1] <= 1.5:
-                _, _, rgb, prediction, elapsed = result
+                _, _, rgb, prediction, elapsed, geometry = result
                 posture, confidence, scores, reason, metrics, box = prediction
             ack = bool(args.ack_file and Path(args.ack_file).exists())
             new_result = result is not None and result[0] != seen_result
@@ -118,7 +134,10 @@ def live(args):
             output = make_output(posture, confidence, reason, status=status, scores=scores, inference_ms=elapsed)
             output["experimental_showcase"] = bool(args.showcase)
             output["model_sha256"] = predictor.metadata["model_sha256"]
-            output.update(metrics=metrics, bounding_box=box, alarm_trigger_risk=args.alarm_risk)
+            output["overall_test_accuracy"] = predictor.metadata.get("overall_test_accuracy")
+            output.update(metrics=metrics, bounding_box=box, geometry=geometry, show_metrics_panel=True, alarm_trigger_risk=args.alarm_risk,
+                          frame_age_ms=(start - result[1]) * 1000 if result else None)
+            output["camera_roi"] = getattr(args, "roi", None)
             with lock:
                 shared["output"], shared["updated"] = output, start
                 link = shared["link"]
@@ -197,7 +216,7 @@ def offline(args):
     output_dir = Path(args.output)
     output_dir.mkdir(parents=True, exist_ok=False)
     results = []
-    predictor = MetricsPredictor(args.model, models_dir=args.models, showcase=args.showcase)
+    predictor = load_scan_predictor(args.model, args.models, args.showcase)
     try:
         for i, path in enumerate(args.images):
             rgb = read_rgb(path)
@@ -205,7 +224,8 @@ def offline(args):
             posture, confidence, scores, reason, metrics, box = predictor.predict(rgb)
             output = make_output(posture, confidence, reason, scores=scores, inference_ms=(time.monotonic() - start) * 1000)
             output.update(image=Path(path).name, model_sha256=predictor.metadata["model_sha256"], experimental_showcase=args.showcase,
-                          metrics=metrics, bounding_box=box)
+                          metrics=metrics, bounding_box=box, geometry=getattr(predictor, "last_geometry", None), show_metrics_panel=True)
+            output["overall_test_accuracy"] = predictor.metadata.get("overall_test_accuracy")
             result_path = output_dir / f"{i:03d}-{Path(path).stem}.jpg"
             if not cv2.imwrite(str(result_path), draw_overlay(rgb, output, showcase=args.showcase)):
                 raise RuntimeError("Cannot save annotated image")
@@ -227,6 +247,8 @@ def main(argv=None):
         if name == "live":
             p.add_argument("--picamera", action="store_true")
             p.add_argument("--source", default="0")
+            from .frame_roi import parse_roi
+            p.add_argument("--roi", type=parse_roi, help="Optional normalized crib crop x1,y1,x2,y2; train/capture with the same view")
             p.add_argument("--display", action="store_true", help="Open an HDMI/desktop OpenCV window")
             p.add_argument("--fps", type=float, default=5)
             p.add_argument("--duration", type=float, help="Stop after this many wall-clock seconds")

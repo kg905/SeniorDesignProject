@@ -23,6 +23,9 @@ def make_output(posture, confidence, reason, *, status=None, scores=None, infere
 def draw_overlay(rgb, output, *, showcase=True, link="disabled"):
     import cv2
     canvas = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
+    if output.get("geometry") is not None:
+        from .geometry_display import draw_geometry
+        draw_geometry(canvas, output)
     color = {"lower": (60, 190, 60), "moderate": (0, 190, 255),
              "high": (40, 40, 240), "unknown": (170, 170, 170)}[output["risk"]]
     box = output.get("bounding_box")
@@ -30,12 +33,20 @@ def draw_overlay(rgb, output, *, showcase=True, link="disabled"):
         height, width = rgb.shape[:2]
         x1, y1, x2, y2 = [int(v * scale) for v, scale in zip(box, (width, height, width, height))]
         cv2.rectangle(canvas, (x1, y1), (x2, y2), color, 2)
-        cv2.putText(canvas, f"Pose region | {output['risk'].upper()}", (x1, max(18, y1 - 6)),
+        kind = "YOLO body" if (output.get("geometry") or {}).get("box_source") == "yolov8_body" else "Pose region"
+        cv2.putText(canvas, f"{kind} | {output['risk'].upper()}", (x1, max(18, y1 - 6)),
                     cv2.FONT_HERSHEY_SIMPLEX, .5, color, 1, cv2.LINE_AA)
     lines = ["EXPERIMENTAL SHOWCASE - NOT A MEDICAL RISK ESTIMATE" if showcase else "RESEARCH POSTURE MONITOR",
              f"Posture: {output['posture']} | Posture risk: {output['risk']}",
-             f"Model score: {output['confidence']:.1%} | State: {output['state']}",
+             f"Frame confidence: {output['confidence']:.1%} | State: {output['state']}",
              f"Reason: {output['reason']} | Alarm link: {link}", output["timestamp"]]
+    if output.get("geometry") is not None or output.get("show_metrics_panel"):
+        from .geometry_display import metric_panel
+        panel = metric_panel(output, canvas.shape[0])
+        measured = np.zeros((panel.shape[0], canvas.shape[1] + panel.shape[1], 3), np.uint8)
+        measured[:canvas.shape[0], :canvas.shape[1]] = canvas
+        measured[:, canvas.shape[1]:] = panel
+        canvas = measured
     banner = np.zeros((145, max(720, canvas.shape[1]), 3), dtype=np.uint8)
     for i, line in enumerate(lines):
         cv2.putText(banner, line, (10, 23 + i * 27), cv2.FONT_HERSHEY_SIMPLEX, .5,

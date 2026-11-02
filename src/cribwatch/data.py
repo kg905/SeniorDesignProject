@@ -8,7 +8,7 @@ import math
 
 from PIL import Image, ImageOps
 
-from .features import FEATURES, SCHEMA_VERSION, VISION_PREPROCESSING
+from .features import FEATURES, SCHEMA_VERSION, VISION_PREPROCESSING, observation_for_schema
 
 MANIFEST_COLUMNS = ["image_path", "sha256", "baby_id", "session_id", "posture", "face_state", "reviewed"]
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp", ".bmp"}
@@ -112,15 +112,17 @@ def review_widget(manifest_path, batch_size=12, *, blind=False, show_suggestions
 _worker_vision = None
 _worker_assets = {}
 _worker_adapter = None
+_worker_schema = SCHEMA_VERSION
 
 
-def _init_extractor(model_dir, pose_name="pose_landmarker_lite.task", adapter=None):
+def _init_extractor(model_dir, pose_name="pose_landmarker_lite.task", adapter=None, feature_schema=SCHEMA_VERSION):
     from multiprocessing.util import Finalize
     from .vision import create_vision
-    global _worker_vision, _worker_assets, _worker_adapter
+    global _worker_vision, _worker_assets, _worker_adapter, _worker_schema
     _worker_assets = {name: hashlib.sha256((Path(model_dir) / name).read_bytes()).hexdigest()
                       for name in (pose_name, "face_landmarker.task")}
     _worker_adapter = adapter
+    _worker_schema = feature_schema
     _worker_vision = create_vision(model_dir, pose_name=pose_name, adapter=adapter)
     # Multiprocessing finalizers run before the native dispatcher's thread pool
     # shuts down; normal Python atexit callbacks run too late for MediaPipe.
@@ -136,12 +138,13 @@ def _extract_row(row):
     with Image.open(path) as im:
         rgb = np.asarray(ImageOps.exif_transpose(im).convert("RGB"))
     started = time.perf_counter()
-    observation = _worker_vision.observe(rgb)
+    observation = observation_for_schema(_worker_vision.observe(rgb), _worker_schema)
     pose_name = next(name for name in _worker_assets if name != "face_landmarker.task")
     return {"image_path": row["image_path"], "sha256": row["sha256"],
             "metrics": {k: v if math.isfinite(v) else None for k, v in observation.metrics.items()},
             "pose_ok": int(observation.pose_ok), "quality_reason": observation.reason,
-            "preprocessing": VISION_PREPROCESSING, "feature_schema": SCHEMA_VERSION,
+            "preprocessing": VISION_PREPROCESSING, "feature_schema": _worker_schema,
+            "geometry": observation.geometry,
             "pose_model_name": pose_name, "pose_model_sha256": _worker_assets[pose_name],
             "face_model_sha256": _worker_assets["face_landmarker.task"],
             "vision_adapter": json.dumps(_worker_adapter, sort_keys=True) if _worker_adapter else "",
@@ -149,12 +152,15 @@ def _extract_row(row):
             "inference_ms": (time.perf_counter() - started) * 1000}
 
 
-def extract_manifest(manifest, output, model_dir, *, workers=1, pose_name="pose_landmarker_lite.task", adapter=None):
+def extract_manifest(manifest, output, model_dir, *, workers=1, pose_name="pose_landmarker_lite.task", adapter=None,
+                     feature_schema=SCHEMA_VERSION):
     """Preserve annotation provenance; checkpoint expensive native inference."""
     import json
     from concurrent.futures import ProcessPoolExecutor
     import multiprocessing
     from .assets import POSE_VARIANTS
+    if feature_schema not in {2, 3}:
+        raise ValueError("Choose feature schema 2 or 3")
     if pose_name not in POSE_VARIANTS.values():
         raise ValueError("Choose an official Lite, Full, or Heavy pose asset")
     if adapter is not None:
@@ -171,7 +177,7 @@ def extract_manifest(manifest, output, model_dir, *, workers=1, pose_name="pose_
     output.parent.mkdir(parents=True, exist_ok=True)
     checkpoint = output.with_suffix(output.suffix + ".checkpoint.jsonl")
     header = {"manifest_sha256": hashlib.sha256(Path(manifest).read_bytes()).hexdigest(),
-              "schema": SCHEMA_VERSION, "preprocessing": VISION_PREPROCESSING,
+              "schema": feature_schema, "preprocessing": VISION_PREPROCESSING,
               "models": {name: hashlib.sha256((Path(model_dir) / name).read_bytes()).hexdigest()
                          for name in sorted((pose_name, "face_landmarker.task"))}}
     if adapter is not None:
@@ -205,7 +211,7 @@ def extract_manifest(manifest, output, model_dir, *, workers=1, pose_name="pose_
     if todo:
         if workers == 1:
             print("Initializing MediaPipe pose and face tasks...", flush=True)
-            _init_extractor(str(model_dir), pose_name, adapter)
+            _init_extractor(str(model_dir), pose_name, adapter, feature_schema)
             print("MediaPipe ready; processing images...", flush=True)
             try:
                 consume(map(_extract_row, todo))
@@ -213,7 +219,7 @@ def extract_manifest(manifest, output, model_dir, *, workers=1, pose_name="pose_
                 _worker_vision.close()
         else:
             with ProcessPoolExecutor(max_workers=workers, mp_context=multiprocessing.get_context("spawn"),
-                                     initializer=_init_extractor, initargs=(str(model_dir), pose_name, adapter)) as pool:
+                                     initializer=_init_extractor, initargs=(str(model_dir), pose_name, adapter, feature_schema)) as pool:
                 consume(pool.map(_extract_row, todo, chunksize=8))
     for row in rows:
         record = cached[(row["image_path"], row["sha256"])]
@@ -224,6 +230,7 @@ def extract_manifest(manifest, output, model_dir, *, workers=1, pose_name="pose_
                     "vision_adapter": json.dumps(adapter, sort_keys=True) if adapter else "",
                     "extraction_route": record.get("extraction_route", "full_frame"),
                     "inference_ms": record.get("inference_ms", "")})
+        row["geometry_json"] = json.dumps(record.get("geometry"), allow_nan=False) if record.get("geometry") else ""
     columns = list(rows[0])
     write_csv(output, rows, columns)
     print(f"Saved features: {output}", flush=True)
