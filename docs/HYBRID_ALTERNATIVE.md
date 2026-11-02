@@ -36,6 +36,8 @@ The alternative retains the 12 named inputs but does not pretend to have all 12 
 4. Section 6 prints both test results, prone recall, unknown rejection counts, usable YOLO recoveries and latency on this machine. Test results describe two preplanned alternatives; the validation report determines the recommendation. This pilot does not establish a fresh unseen-infant result.
 5. Section 7 displays hybrid sample predictions with boxes and risk levels. Section 8 downloads SIDS_Pi5_Hybrid_Alternative.zip. Download before resetting Colab. The old model in its original run is untouched.
 
+Sections 6–7 distinguish **overall model score (test accuracy out of 100)** from **per-image confidence**. The overall score is 100 times the fraction of all test images correctly classified, counting unknowns as errors; it is not pose coverage, prediction coverage, or a medical-risk score. Section 7 prints that overall score alongside individual sample confidence values. These display changes do not retrain or alter a model.
+
 ## Reuse an already open Colab session
 
 After current execution stops, pull source with Git LFS smudging disabled as shown in [IMPROVE_MODEL.md](IMPROVE_MODEL.md). Install the following in new code cells; the base requirements from section 2 must already be installed:
