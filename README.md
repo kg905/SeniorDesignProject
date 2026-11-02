@@ -1,5 +1,7 @@
 # CribWatch research prototype
 
+**Current group test download:** [user's Colab-trained hybrid package (31.5% test accuracy)](artifacts/team_test_runs/colab-31p5-4094df16/README.md). The exact uploaded ZIP, checksums, report and Pi run instructions are preserved separately from new-model development. See [team test versions](docs/TEAM_TEST_RUNS.md).
+
 **YOLO + MediaPipe alternative:** [instructions and metric definitions](docs/HYBRID_ALTERNATIVE.md), [separate Colab](https://colab.research.google.com/github/kg905/SeniorDesignProject/blob/main/notebooks/hybrid_mediapipe_yolo_colab.ipynb). It preserves existing artifacts, compares a matching baseline with YOLO-assisted extraction, and retrains one separate posture classifier. YOLO fallback confidence and missing head depth are explicitly documented; no improved accuracy is assumed.
 
 An [actual original-data comparison](artifacts/hybrid_alternative_v1/README.md) is now included: usable-pose coverage 55.8% → 71.1%, and test accuracy 23.5% → 29.1% across the same 882 images. This uses publisher labels, not the manually sorted Colab ZIP. The hybrid is still far below 95%; older model artifacts are preserved.

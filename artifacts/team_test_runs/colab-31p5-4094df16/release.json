@@ -1,0 +1,9 @@
+{
+  "archive": "SIDS_Pi5_Hybrid_Alternative.zip",
+  "archive_sha256": "a1cb912329d68c211aefb974397798c7afc2da6037f504a7b60bbc34692a97aa",
+  "bytes": 14765185,
+  "classifier_sha256": "4094df169c6275f5857ba94f8b136a32730221bbf309b2dda39148cb365500d5",
+  "test_images": 267,
+  "test_accuracy": 0.3146067415730337,
+  "provenance": "Exact user-uploaded Colab deployment ZIP; archive bytes preserved; every declared SHA256 and classifier/report binding verified. No weights executed during intake."
+}
