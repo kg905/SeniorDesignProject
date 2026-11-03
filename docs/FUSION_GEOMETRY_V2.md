@@ -44,6 +44,10 @@ The Pi 4 receiver still uses **TCP 5000**, shared-key provisioning and the exist
 
 For SSH/headless operation, omit --display and review the recorded annotated MP4 on your laptop. A still-image test shows posture/risk but does not run the live dwell timer or send a physical alarm; actual sound must be tested through the live monitor and configured Pi 4 receiver.
 
+The image preview now explicitly says **State: photo preview**, **Live monitoring: not running**, and **Hardware alarm: N/A (photo preview)**. Its saved whole-test score is constant across photos; frame confidence changes per image. JSON retains boolean alarm fields for interface compatibility and includes monitoring_mode to distinguish the inactive photo preview from a live policy result. The live monitor still uses its configured dwell/latching policy: default side 2 seconds and prone 1 second before a posture alarm, with sustained uncertainty handled separately as a monitoring fault.
+
+A human-visible cheek/profile does not prove airway clearance. The current risk category is derived from body posture, not a trained airway-occlusion or awake-play model. A failed dense face result can report face_detected=0 even when a profile is partly visible; that is a detector limitation, not proof that the face is covered. Do not automatically downgrade prone sleep posture based solely on face visibility. Distinguishing head turned versus face pressed into bedding requires separate reviewed head/face labels and validation.
+
 An optional normalized --roi x1,y1,x2,y2 crops the crib before classification and drawing. Use the same ROI while collecting new data. This can exclude an operator outside the crib, but it must not crop away the baby or be changed between training and evaluation without documenting the view change.
 
 ## Your next action: record the actual overhead doll view

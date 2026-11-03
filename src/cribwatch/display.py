@@ -12,12 +12,20 @@ def read_rgb(path):
 
 
 def make_output(posture, confidence, reason, *, status=None, scores=None, inference_ms=None):
+    monitoring_mode = "offline_preview" if status is None else "live"
     status = status or {"state": "observing", "baby_alarm": False, "monitor_fault": posture == "unknown"}
     return {"schema_version": 1, "timestamp": datetime.now(timezone.utc).isoformat(timespec="milliseconds"),
             "posture": posture, "risk": RISK[posture], "confidence": confidence, "reason": reason,
             "state": status["state"], "baby_alarm": bool(status["baby_alarm"]),
             "monitor_fault": bool(status["monitor_fault"]), "scores": scores or {},
-            "inference_ms": inference_ms, "risk_basis": "experimental_posture_proxy_not_medical_risk"}
+            "inference_ms": inference_ms, "monitoring_mode": monitoring_mode,
+            "risk_basis": "experimental_posture_proxy_not_medical_risk"}
+
+
+def alarm_display_labels(output):
+    if output.get("monitoring_mode") == "offline_preview":
+        return "Live monitoring: not running", "Hardware alarm: N/A (photo preview)"
+    return f"Monitor fault: {output['monitor_fault']}", f"Baby alarm: {output['baby_alarm']}"
 
 
 def draw_overlay(rgb, output, *, showcase=True, link="disabled"):
@@ -36,10 +44,13 @@ def draw_overlay(rgb, output, *, showcase=True, link="disabled"):
         kind = "YOLO body" if (output.get("geometry") or {}).get("box_source") == "yolov8_body" else "Pose region"
         cv2.putText(canvas, f"{kind} | {output['risk'].upper()}", (x1, max(18, y1 - 6)),
                     cv2.FONT_HERSHEY_SIMPLEX, .5, color, 1, cv2.LINE_AA)
+    preview = output.get("monitoring_mode") == "offline_preview"
+    state = "photo preview" if preview else output["state"]
+    alarm_link = "N/A (photo preview)" if preview else link
     lines = ["EXPERIMENTAL SHOWCASE - NOT A MEDICAL RISK ESTIMATE" if showcase else "RESEARCH POSTURE MONITOR",
              f"Posture: {output['posture']} | Posture risk: {output['risk']}",
-             f"Frame confidence: {output['confidence']:.1%} | State: {output['state']}",
-             f"Reason: {output['reason']} | Alarm link: {link}", output["timestamp"]]
+             f"Frame confidence: {output['confidence']:.1%} | State: {state}",
+             f"Reason: {output['reason']} | Alarm link: {alarm_link}", output["timestamp"]]
     if output.get("geometry") is not None or output.get("show_metrics_panel"):
         from .geometry_display import metric_panel
         panel = metric_panel(output, canvas.shape[0])

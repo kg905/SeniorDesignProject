@@ -73,7 +73,7 @@ def live(args):
     client = TCPAlarmClient(args.alarm_host, get_key(), port=args.alarm_port) if args.alarm_host else None
     policy = AlarmPolicy(PolicyConfig(alarm_risk=args.alarm_risk))
     lock, stop = threading.Lock(), threading.Event()
-    shared = {"output": make_output("unknown", 0., "starting"), "updated": 0.,
+    shared = {"output": make_output("unknown", 0., "starting", status={"state":"observing", "baby_alarm":False, "monitor_fault":True}), "updated": 0.,
               "link": "connecting" if client else "disabled"}
 
     def send():

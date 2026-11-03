@@ -71,8 +71,9 @@ def metric_panel(output, height):
         value = output.get("scores", {}).get(label)
         rows.append(f"{label}: {value:.1%}" if value is not None else f"{label}: N/A")
     overall = output.get("overall_test_accuracy")
-    rows += [f"Overall test score: {100 * overall:.1f}/100" if overall is not None else "Overall test score: N/A",
-             f"Monitor fault: {output['monitor_fault']}", f"Baby alarm: {output['baby_alarm']}"]
+    from .display import alarm_display_labels
+    rows += [f"Saved whole-test score: {100 * overall:.1f}/100" if overall is not None else "Saved whole-test score: N/A",
+             *alarm_display_labels(output)]
     for i, row in enumerate(rows):
         cv2.putText(panel, row, (8, 20 + 22*i), cv2.FONT_HERSHEY_SIMPLEX, .39,
                     (220, 230, 230), 1, cv2.LINE_AA)

@@ -2,7 +2,7 @@ from types import SimpleNamespace as P
 
 import numpy as np
 
-from cribwatch.display import draw_overlay, make_output
+from cribwatch.display import alarm_display_labels, draw_overlay, make_output
 from cribwatch.features import extract_metrics, observation_for_schema
 from cribwatch.frame_roi import crop_frame, parse_roi
 from cribwatch.tcp_alarm import TCPAlarmClient
@@ -105,3 +105,15 @@ def test_doll_capture_records_real_session_without_inventing_baby_id(tmp_path,mo
     assert row['baby_id']=='' and row['session_id']=='actual-session' and row['subject_kind']=='doll'
     with Image.open(tmp_path/row['relative_path']) as image:
         assert image.getpixel((0,0))[0]>240
+
+
+def test_photo_alarm_is_not_presented_as_a_live_negative():
+    photo=make_output('prone',.73,'ok')
+    assert photo['risk']=='high'
+    assert photo['monitoring_mode']=='offline_preview'
+    assert alarm_display_labels(photo)==('Live monitoring: not running','Hardware alarm: N/A (photo preview)')
+    # The wire fields stay booleans; the display explains their inactive mode.
+    assert type(photo['baby_alarm']) is bool
+    live=make_output('prone',.73,'ok',status={'state':'check_baby','baby_alarm':True,'monitor_fault':False})
+    assert live['monitoring_mode']=='live'
+    assert alarm_display_labels(live)==('Monitor fault: False','Baby alarm: True')
