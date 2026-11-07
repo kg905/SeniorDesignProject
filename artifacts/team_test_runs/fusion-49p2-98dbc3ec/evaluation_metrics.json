@@ -1,0 +1,17 @@
+{
+  "derived_from": "Bundled models/test.json confusion_matrix; no image inference or retraining",
+  "prediction_coverage": 0.6796875,
+  "unknown_predictions": 164,
+  "all_test_images": {
+    "n_images": 512,
+    "accuracy": 0.4921875,
+    "macro_f1": 0.579874075701003,
+    "weighted_f1": 0.5878852628074895
+  },
+  "posture_assigned_only": {
+    "n_images": 348,
+    "accuracy": 0.7241379310344828,
+    "macro_f1": 0.7164501375102835,
+    "weighted_f1": 0.7310088631653043
+  }
+}

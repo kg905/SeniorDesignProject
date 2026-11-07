@@ -21,13 +21,15 @@ Schema 3 requires fresh extraction and retraining. It does not relabel old vecto
 
 Open [fusion_geometry_colab.ipynb](https://colab.research.google.com/github/kg905/SeniorDesignProject/blob/main/notebooks/fusion_geometry_colab.ipynb). For faster fine tuning select a GPU runtime before setup. The notebook keeps Colab's matching Torch/TorchVision pair; Pi inference uses the bundled pinned CPU-compatible versions.
 
-1. Run setup, upload the same reviewed BabyTraining.zip and import its folders. Keep work local and download results before resetting.
+1. Run setup, upload BabyTraining-V4.zip (enclosing Baby Training - V1 with back/prone/side/unknown folders) and import its folders. Alternatively set ZIP_IN_DRIVE to its actual Drive path. Keep work local and download results before resetting.
 2. Extract schema-3 features using the versioned YOLOv8/MediaPipe adapter. Inspect pose coverage and failures. Keep the source camera view/framing consistent with capture; the actual reported test cohort includes detection failures.
 3. Train one network. Every learned stage fits training groups only: image fine tuning, metric normalization, and missing-value processing. Epoch, calibration temperature and acceptance threshold are selected using validation data only. The test split is evaluated afterward. Color augmentation does not alter joint coordinates; geometric image flips/crops are not applied without transforming the associated metrics.
-4. Read overall accuracy, every class's recall, confusion matrix, coverage, detector-evidence ceiling and the metric/image ablations. This publicly inspected pilot is exploratory; use a fresh cohort with real infant/session IDs for a final unseen-infant claim. A doll-only score is not infant accuracy.
+4. Read overall accuracy, every class's recall, confusion matrix, coverage, detector-evidence ceiling and the metric/image ablations. Section 6A adds macro/weighted F1, precision/recall and separate assigned-only results; unknown predictions still count as errors in the full-test report. This publicly inspected pilot is exploratory; use a fresh cohort with real infant/session IDs for a final unseen-infant claim. A doll-only score is not infant accuracy.
 5. Display example scans and export a new deployment ZIP. It contains one posture network, its model/feature metadata, exact YOLO/MediaPipe assets, code and TCP alarm support. Do not mix this model with an older feature implementation.
 
 The original 12-metric component remains visible in code, saved feature tables and the display.
+
+For the uploaded team fusion package and step-by-step device commands, use the [Pi 5 camera / Pi 4 alarm quickstart](PI_FUSION_QUICKSTART.md). The raw training dataset is only needed in Colab; Pi 5 uses the exported model/runtime and Pi 4 runs the matching TCP receiver.
 
 ## What the camera display shows
 

@@ -1,0 +1,29 @@
+{
+  "received_date": "2026-11-07",
+  "kind": "exact_user_uploaded_fusion_deployment",
+  "archive": "SIDS_Pi5_Fusion_Geometry.zip",
+  "archive_bytes": 18490018,
+  "archive_sha256": "5eb641aa59751c38fdbf031204e82d16cb2d00c5d1fbeff02ff24d3f03d964b3",
+  "model_sha256": "98dbc3ec04e1db58611bc84fc99ede7191d738a28952fa1065654a65d3421301",
+  "config_sha256": "74af5b22a914c30c5ff3b2a6326158febbc1df6ef441403c3f02d9daf3234b8d",
+  "feature_schema": 3,
+  "archive_members": 44,
+  "integrity_checks": {
+    "zip_crc": "passed",
+    "bundled_sha256_entries_verified": 43,
+    "weights_config_report_binding": "passed"
+  },
+  "archive_modified": false,
+  "raw_training_dataset_included": false,
+  "dataset_note": "BabyTraining-V4.zip attachment exceeds the 32 MiB transfer limit. User will provide it via Drive; it has not been copied into this repository.",
+  "metrics": "evaluation_metrics.json",
+  "pi_setup": "../../../docs/PI_FUSION_QUICKSTART.md",
+  "local_checks": {
+    "receiver_stdlib_only_help": "passed",
+    "pi5_live_and_offline_help": "passed",
+    "fusion_weights_and_detector_asset_load": "passed",
+    "blank_frame": "unknown/no_pose",
+    "notebook_f1_cell_against_report_counts": "passed",
+    "actual_pi_hardware_tested": false
+  }
+}

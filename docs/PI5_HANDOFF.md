@@ -1,5 +1,7 @@
 # Pi 5 / Arducam: MediaPipe + 12 metrics + one classifier
 
+**Using `SIDS_Pi5_Fusion_Geometry.zip`? Start with the [fusion Pi 5 / Pi 4 quickstart](PI_FUSION_QUICKSTART.md).** It covers the neural model, both dependency files, shared-key setup and actual camera/receiver commands. The metric-only tree-model details below describe the older deployment path.
+
 For the new geometry + image/metric network, read **FUSION.md** if present in the package. It adds detailed measured vectors/angles and uses a separate tensor-only posture model with fusion.json metadata. Keep the bundled model, feature schema and source together. The camera/receiver commands and TCP 5000 contract below are shared; additional hybrid dependencies are required for this version.
 
 If your ZIP also contains **HYBRID.md** and **requirements-hybrid.txt**, it is the separate YOLO + MediaPipe alternative. Follow HYBRID.md to install its additional Torch/Ultralytics packages before running the commands below. Its YOLO fallback changes the confidence source for four visibility entries and can leave head depth missing; use its matching classifier and assets together.
