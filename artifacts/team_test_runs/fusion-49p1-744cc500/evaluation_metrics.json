@@ -1,0 +1,23 @@
+{
+  "source": "test.json",
+  "f1_classes": [
+    "back",
+    "side",
+    "prone"
+  ],
+  "all_images_unknown_counts_as_error": {
+    "images": 875,
+    "correct": 430,
+    "accuracy": 0.49142857142857144,
+    "macro_f1": 0.5921637864651771,
+    "weighted_f1": 0.5971094587618024
+  },
+  "assigned_postures_only": {
+    "images": 565,
+    "correct": 430,
+    "accuracy": 0.7610619469026548,
+    "macro_f1": 0.7561638272472694,
+    "weighted_f1": 0.762865677300531
+  },
+  "coverage": 0.6457142857142857
+}

@@ -1,0 +1,89 @@
+{
+  "n_images": 846,
+  "n_babies": null,
+  "grouping_field": "source_group",
+  "n_evaluation_groups": 335,
+  "accuracy_all_images_unknown_counts_as_error": 0.4326241134751773,
+  "accuracy_95ci_group_cluster_bootstrap": [
+    0.38763588837022034,
+    0.4749716239813737
+  ],
+  "coverage": 0.6052009456264775,
+  "accuracy_on_accepted_only": 0.71484375,
+  "unsafe_predicted_back_count": 38,
+  "unsafe_total": 569,
+  "class_order": [
+    "back",
+    "side",
+    "prone",
+    "unknown"
+  ],
+  "confusion_matrix": [
+    [
+      146,
+      29,
+      12,
+      90
+    ],
+    [
+      19,
+      90,
+      32,
+      121
+    ],
+    [
+      19,
+      35,
+      130,
+      123
+    ],
+    [
+      0,
+      0,
+      0,
+      0
+    ]
+  ],
+  "per_class": {
+    "back": {
+      "correct": 146,
+      "total": 277,
+      "recall": 0.5270758122743683,
+      "frame_binomial_95ci_descriptive_only": [
+        0.4683127633513374,
+        0.5850981541926316
+      ]
+    },
+    "side": {
+      "correct": 90,
+      "total": 262,
+      "recall": 0.3435114503816794,
+      "frame_binomial_95ci_descriptive_only": [
+        0.28864311120041775,
+        0.40290236720704276
+      ]
+    },
+    "prone": {
+      "correct": 130,
+      "total": 307,
+      "recall": 0.4234527687296417,
+      "frame_binomial_95ci_descriptive_only": [
+        0.3694620104881601,
+        0.47933550777625034
+      ]
+    }
+  },
+  "limitations": "Research posture labels only, not SIDS/airway outcomes. Intervals are uncertain with few babies. No event latency or false-alarm/hour claim from still images. No infant/session IDs: source-image groups cannot demonstrate accuracy on unseen babies.",
+  "posture_95pct_point_estimates_met": false,
+  "research_95pct_point_target_met": false,
+  "model_sha256": "744cc50052dae030fe8f13155983df12a8c232182862040ecba66b4e174c4675",
+  "config_sha256": "81817648fd4d6088fe0a13ec41c36e2a8808b493ead878d65778e7843e620a78",
+  "features_sha256": "2a83c75725efdcce29e9d09504076c894a9a6a29928ec3fe4c2b8f594e3f0bd2",
+  "architecture": "mobilenet_v3_small_metric_fusion_v1",
+  "temperature": 3.0,
+  "score_threshold": 0.5,
+  "validation_coverage_constraint_met": false,
+  "exploratory": true,
+  "best_epoch": 8,
+  "metric_input_count": 12
+}

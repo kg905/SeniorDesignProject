@@ -1,0 +1,19 @@
+{
+  "received_date": "2026-11-24",
+  "kind": "exact_user_uploaded_fusion_deployment",
+  "archive": "SIDS_Pi5_Fusion_Geometry2.zip",
+  "archive_bytes": 18490899,
+  "archive_sha256": "61866eb10bf2a7b41db64c52cfe74c016aa2bdcf947ca4b282fa605f84db46ac",
+  "model_sha256": "744cc50052dae030fe8f13155983df12a8c232182862040ecba66b4e174c4675",
+  "config_sha256": "81817648fd4d6088fe0a13ec41c36e2a8808b493ead878d65778e7843e620a78",
+  "feature_schema": 3,
+  "archive_members": 44,
+  "integrity_checks": {
+    "zip_crc": "passed",
+    "bundled_sha256_entries_verified": 43,
+    "weights_config_reports_binding": "passed",
+    "detector_config_binding": "passed"
+  },
+  "metrics": "evaluation_metrics.json",
+  "pi_setup": "../../../docs/PI_FUSION_QUICKSTART.md"
+}

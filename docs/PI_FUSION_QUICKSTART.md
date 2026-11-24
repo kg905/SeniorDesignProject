@@ -1,6 +1,6 @@
 # Fusion model: Colab, Pi 5 camera and Pi 4 alarm
 
-This guide matches the [uploaded fusion package, model `98dbc3ec`](../artifacts/team_test_runs/fusion-49p2-98dbc3ec/README.md). Keep its archive unchanged in GitHub and unzip it into a new folder on the devices. Future Colab exports use the same workflow with their own matching models and assets.
+This guide matches the [latest uploaded fusion package, model `744cc500`](../artifacts/team_test_runs/fusion-49p1-744cc500/README.md). Unzip the package into a new folder on each device.
 
 ## What goes where
 
@@ -23,7 +23,7 @@ Pi 5 runs all vision and classification. Pi 4 receives the resulting alarm/fault
 
 Open [fusion_geometry_colab.ipynb](https://colab.research.google.com/github/kg905/SeniorDesignProject/blob/main/notebooks/fusion_geometry_colab.ipynb). Section 3 accepts **BabyTraining-V4.zip** from your computer, or from the `ZIP_IN_DRIVE` path. Its `Baby Training - V1` enclosing folder is supported. Sections 4–6 import, extract and train. New **section 6A** reports accuracy, macro/weighted F1, precision, recall and prediction coverage, including both full-test and assigned-only evaluations. Section 8 exports **SIDS_Pi5_Fusion_Geometry.zip**.
 
-The already uploaded [deployment ZIP](../artifacts/team_test_runs/fusion-49p2-98dbc3ec/SIDS_Pi5_Fusion_Geometry.zip) is ready for team testing without retraining. Download it through GitHub's **Download raw**, not the small Git LFS pointer. Its SHA256 is `5eb641aa59751c38fdbf031204e82d16cb2d00c5d1fbeff02ff24d3f03d964b3`. Its report is 49.2% overall accuracy on 512 test images; 95% is not established.
+Download [the uploaded deployment ZIP](https://media.githubusercontent.com/media/kg905/SeniorDesignProject/main/artifacts/team_test_runs/fusion-49p1-744cc500/SIDS_Pi5_Fusion_Geometry2.zip). Its SHA-256 is `61866eb10bf2a7b41db64c52cfe74c016aa2bdcf947ca4b282fa605f84db46ac`. The [evaluation report](../artifacts/team_test_runs/fusion-49p1-744cc500/README.md) records 49.1% accuracy across 875 test images.
 
 The dataset attachment could not be transferred into this environment because it exceeds 32 MiB. It is being provided through Drive; the repository currently contains its [layout and usage instructions](../data/team_datasets/README.md), not that ZIP. Neither Pi needs the raw dataset.
 
@@ -32,9 +32,9 @@ The dataset attachment could not be transferred into this environment because it
 Copy the deployment ZIP onto each Pi, for example into `~/Downloads`. On each device:
 
 ```bash
-mkdir -p ~/senior_design/CribWatch_Fusion_98dbc3ec
-unzip -n ~/Downloads/SIDS_Pi5_Fusion_Geometry.zip -d ~/senior_design/CribWatch_Fusion_98dbc3ec
-cd ~/senior_design/CribWatch_Fusion_98dbc3ec
+mkdir -p ~/senior_design/CribWatch_Fusion_744cc500
+unzip -n ~/Downloads/SIDS_Pi5_Fusion_Geometry2.zip -d ~/senior_design/CribWatch_Fusion_744cc500
+cd ~/senior_design/CribWatch_Fusion_744cc500
 python3 - <<'PY'
 import hashlib, json
 from pathlib import Path
@@ -59,7 +59,7 @@ sudo apt update
 sudo apt install python3-venv python3-picamera2 libgles2 libegl1 libgl1 libportaudio2
 python3 -m venv --system-site-packages ~/senior_design/fusion_env
 source ~/senior_design/fusion_env/bin/activate
-cd ~/senior_design/CribWatch_Fusion_98dbc3ec
+cd ~/senior_design/CribWatch_Fusion_744cc500
 python -m pip install -r requirements-pi5.txt
 python -m pip install -r requirements-hybrid.txt
 python -m pip install --no-deps ultralytics==8.3.200
@@ -119,7 +119,7 @@ The [alarm protocol](ALARM_PROTOCOL.md) explains challenge/HMAC authentication. 
 First, on Pi 4, start a console-only receiver to check the connection:
 
 ```bash
-cd ~/senior_design/CribWatch_Fusion_98dbc3ec
+cd ~/senior_design/CribWatch_Fusion_744cc500
 python3 alarm_receiver.py
 ```
 
@@ -127,7 +127,7 @@ On Pi 5, with its key loaded in the same terminal:
 
 ```bash
 source ~/senior_design/fusion_env/bin/activate
-cd ~/senior_design/CribWatch_Fusion_98dbc3ec
+cd ~/senior_design/CribWatch_Fusion_744cc500
 python monitor_pi5.py --model models --models models --picamera --display --showcase \
   --alarm-host 192.168.50.1 --alarm-port 5000 --alarm-risk moderate \
   --ack-file /tmp/cribwatch-ack \
